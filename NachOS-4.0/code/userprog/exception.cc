@@ -155,45 +155,45 @@ void ExceptionHandler(ExceptionType which)
 
 	switch (which)
 	{
-	// case NoException:
-	// 	kernel->interupt->setStatus(SystemMode);
-	// 	DEBUG(dbgSys, "Switch to system mode\n");
-	// 	break;
-	// case PageFaultException:
-	// 	DEBUG('a', "\n No valid translation found");
-	// 	printf("\n\n No valid translation found");
-	// 	interrupt->Halt();
-	// 	break;
-	// case ReadOnlyException:
-	// 	DEBUG('a', "\n Write attempted to page marked read-only");
-	// 	printf("\n\n Write attempted to page marked read-only");
-	// 	interrupt->Halt();
-	// 	break;
-	// case BusErrorException:
-	// 	DEBUG('a', "\n Translation resulted invalid physical address");
-	// 	printf("\n\n Translation resulted invalid physical address");
-	// 	interrupt->Halt();
-	// 	break;
-	// case AddressErrorException:
-	// 	DEBUG('a', "\n Unaligned reference or one that was beyond the end of the address space");
-	// 	printf("\n\n Unaligned reference or one that was beyond the end of the address space");
-	// 	interrupt->Halt();
-	// 	break;
-	// case OverflowException:
-	// 	DEBUG('a', "\nInteger overflow in add or sub.");
-	// 	printf("\n\n Integer overflow in add or sub.");
-	// 	interrupt->Halt();
-	// 	break;
-	// case IllegalInstrException:
-	// 	DEBUG('a', "\n Unimplemented or reserved instr.");
-	// 	printf("\n\n Unimplemented or reserved instr.");
-	// 	interrupt->Halt();
-	// 	break;
-	// case NumExceptionTypes:
-	// 	DEBUG('a', "\n Number exception types");
-	// 	printf("\n\n Number exception types");
-	// 	interrupt->Halt();
-	// 	break;
+	case NoException:
+		kernel->interrupt->setStatus(SystemMode);
+		DEBUG(dbgSys, "Switch to system mode\n");
+		break;
+	case PageFaultException:
+		DEBUG('a', "\n No valid translation found");
+		printf("\n\n No valid translation found");
+		kernel->interrupt->Halt();
+		break;
+	case ReadOnlyException:
+		DEBUG('a', "\n Write attempted to page marked read-only");
+		printf("\n\n Write attempted to page marked read-only");
+		kernel->interrupt->Halt();
+		break;
+	case BusErrorException:
+		DEBUG('a', "\n Translation resulted invalid physical address");
+		printf("\n\n Translation resulted invalid physical address");
+		kernel->interrupt->Halt();
+		break;
+	case AddressErrorException:
+		DEBUG('a', "\n Unaligned reference or one that was beyond the end of the address space");
+		printf("\n\n Unaligned reference or one that was beyond the end of the address space");
+		kernel->interrupt->Halt();
+		break;
+	case OverflowException:
+		DEBUG('a', "\nInteger overflow in add or sub.");
+		printf("\n\n Integer overflow in add or sub.");
+		kernel->interrupt->Halt();
+		break;
+	case IllegalInstrException:
+		DEBUG('a', "\n Unimplemented or reserved instr.");
+		printf("\n\n Unimplemented or reserved instr.");
+		kernel->interrupt->Halt();
+		break;
+	case NumExceptionTypes:
+		DEBUG('a', "\n Number exception types");
+		printf("\n\n Number exception types");
+		kernel->interrupt->Halt();
+		break;
 	case SyscallException:
 		switch (type)
 		{
@@ -203,6 +203,23 @@ void ExceptionHandler(ExceptionType which)
 			return handle_SC_Add();
 		case SC_Create:
 			return handle_SC_Create();
+		case SC_Open:
+			break;
+		case SC_Close:
+			break;
+		case SC_Read:
+			break;
+		case SC_Write:
+			break;
+		case SC_Seek:
+			break;
+		case SC_Remove:
+			break;
+		// for socket using network folder to implement
+		// case SC_socketTCP:
+		// case SC_Connect:
+		// case SC_Send:
+		// case SC_Receive:
 		default:
 			cerr << "Unexpected system call " << type << "\n";
 			break;

@@ -37,6 +37,11 @@
 
 #define SC_Add 42
 
+// #define SC_socketTCP 16
+// #define SC_Connect 17
+// #define SC_Send 18
+// #define SC_Receive 19
+
 #ifndef IN_ASM
 
 /* The system call interface.  These are the operations the Nachos

@@ -41,7 +41,7 @@ bool SysCreate(char *fileName)
   else
   {
     DEBUG(dbgSys, "\nFile's name read successfully");
-    if (!kernel->fileSystem->Create(fileName))
+    if (!kernel->fileSystem->Create(fileName, 0))
     {
       DEBUG(dbgSys, "\nError creating file");
       success = false;
