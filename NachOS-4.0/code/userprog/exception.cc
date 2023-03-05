@@ -133,6 +133,22 @@ void handle_SC_Close()
 {
 	return move_program_counter();
 }
+void handle_SC_Read()
+{
+	return move_program_counter();
+}
+void handle_SC_Write()
+{
+	return move_program_counter();
+}
+void handle_SC_Seek()
+{
+	return move_program_counter();
+}
+void handle_SC_Remove()
+{
+	return move_program_counter();
+}
 void handle_SC_Add()
 {
 	DEBUG(dbgSys, "Add " << kernel->machine->ReadRegister(4) << " + " << kernel->machine->ReadRegister(5) << "\n");
@@ -216,13 +232,13 @@ void ExceptionHandler(ExceptionType which)
 		case SC_Close:
 			return handle_SC_Close();
 		case SC_Read:
-			break;
+			return handle_SC_Read();
 		case SC_Write:
-			break;
+			return handle_SC_Write();
 		case SC_Seek:
-			break;
+			return handle_SC_Seek();
 		case SC_Remove:
-			break;
+			return handle_SC_Remove();
 		// for socket using network folder to implement
 		// case SC_socketTCP:
 		// case SC_Connect:
