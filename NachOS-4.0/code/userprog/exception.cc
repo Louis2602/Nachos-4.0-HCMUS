@@ -125,6 +125,14 @@ void handle_SC_Create()
 	delete[] fileName;
 	return move_program_counter();
 }
+void handle_SC_Open()
+{
+	return move_program_counter();
+}
+void handle_SC_Close()
+{
+	return move_program_counter();
+}
 void handle_SC_Add()
 {
 	DEBUG(dbgSys, "Add " << kernel->machine->ReadRegister(4) << " + " << kernel->machine->ReadRegister(5) << "\n");
@@ -204,9 +212,9 @@ void ExceptionHandler(ExceptionType which)
 		case SC_Create:
 			return handle_SC_Create();
 		case SC_Open:
-			break;
+			return handle_SC_Open();
 		case SC_Close:
-			break;
+			return handle_SC_Close();
 		case SC_Read:
 			break;
 		case SC_Write:
