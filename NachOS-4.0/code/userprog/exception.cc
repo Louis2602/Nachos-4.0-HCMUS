@@ -127,6 +127,14 @@ void handle_SC_Create()
 }
 void handle_SC_Open()
 {
+	int virtAddr = kernel->machine->ReadRegister(4);
+	char *fileName = User2System(virtAddr, MaxFileLength + 1);
+	// type: OpenForRead - OpenForWrite - OpenForReadWrite
+	int type = kernel->machine->ReadRegister(5);
+
+	kernel->machine->WriteRegister(2, SysOpen(fileName, type));
+
+	delete[] fileName;
 	return move_program_counter();
 }
 void handle_SC_Close()

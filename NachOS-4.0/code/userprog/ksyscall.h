@@ -54,5 +54,16 @@ bool SysCreate(char *fileName)
 
   return success;
 }
+int SysOpen(char *fileName, int type)
+{
+  if (type != 0 && type != 1)
+    return -1;
+  // Open file successfully
+  if (kernel->fileSystem->Open(fileName))
+  {
+    DEBUG(dbgSys, "\nOpened file");
+  }
+  return 1;
+}
 
 #endif /* ! __USERPROG_KSYSCALL_H__ */

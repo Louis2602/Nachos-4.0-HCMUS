@@ -96,12 +96,15 @@ public:
 	// bypassing the implicit position.
 	int WriteAt(char *from, int numBytes, int position);
 
-	int Length();							 // Return the number of bytes in the
-											 // file (this interface is simpler
-											 // than the UNIX idiom -- lseek to
-											 // end of file, tell, lseek back
-	void Create() private : FileHeader *hdr; // Header for this file
-	int seekPosition;						 // Current position within the file
+	int Length(); // Return the number of bytes in the
+				  // file (this interface is simpler
+				  // than the UNIX idiom -- lseek to
+				  // end of file, tell, lseek back
+	void Create();
+
+private:
+	FileHeader *hdr;  // Header for this file
+	int seekPosition; // Current position within the file
 };
 
 #endif // FILESYS
