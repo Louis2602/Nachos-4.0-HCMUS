@@ -131,7 +131,6 @@ void handle_SC_Open()
 	char *fileName = User2System(virtAddr, MaxFileLength + 1);
 	// type: OpenForRead - OpenForWrite - OpenForReadWrite
 	int type = kernel->machine->ReadRegister(5);
-
 	kernel->machine->WriteRegister(2, SysOpen(fileName, type));
 
 	delete[] fileName;
@@ -139,6 +138,8 @@ void handle_SC_Open()
 }
 void handle_SC_Close()
 {
+	int id = kernel->machine->ReadRegister(4);
+	kernel->machine->WriteRegister(2, SysClose(id));
 	return move_program_counter();
 }
 void handle_SC_Read()
@@ -155,6 +156,11 @@ void handle_SC_Seek()
 }
 void handle_SC_Remove()
 {
+	return move_program_counter();
+}
+void handle_SC_socketTCP()
+{
+	kernel->machine->WriteRegister(2, SysSocketTCP());
 	return move_program_counter();
 }
 void handle_SC_Add()
@@ -248,7 +254,8 @@ void ExceptionHandler(ExceptionType which)
 		case SC_Remove:
 			return handle_SC_Remove();
 		// for socket using network folder to implement
-		// case SC_socketTCP:
+		case SC_socketTCP:
+			return handle_SC_socketTCP();
 		// case SC_Connect:
 		// case SC_Send:
 		// case SC_Receive:

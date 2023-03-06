@@ -89,6 +89,20 @@ public:
 
 	void Print(); // List all the files and their contents
 
+	int Close(int id)
+	{
+		return 1;
+		// Implement in here
+	}
+	int SocketTCP()
+	{
+		return OpenSocket();
+	}
+	int Connect(int socketid, char *ip, int port);
+	int Send(int socketid, char *buffer, int len);
+	int Receive(int socketid, char *buffer, int len);
+	int Close(int socketid);
+
 private:
 	OpenFile *freeMapFile;	 // Bit map of free disk blocks,
 							 // represented as a file

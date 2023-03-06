@@ -66,4 +66,12 @@ int SysOpen(char *fileName, int type)
   return 1;
 }
 
+int SysClose(int id)
+{
+  return kernel->fileSystem->Close(id);
+}
+int SysSocketTCP()
+{
+  return kernel->fileSystem->SocketTCP();
+}
 #endif /* ! __USERPROG_KSYSCALL_H__ */
