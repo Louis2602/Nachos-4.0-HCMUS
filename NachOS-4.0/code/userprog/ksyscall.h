@@ -48,7 +48,7 @@ bool SysCreate(char *fileName)
     }
     else
     {
-	  DEBUG(dbgSys, "Creating a file successfully.\n");
+      DEBUG(dbgSys, "Creating a file successfully.\n");
       success = true;
     }
   }
