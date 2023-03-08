@@ -38,7 +38,7 @@
 #define SC_Add 42
 
 #define SC_SocketTCP 16
-// #define SC_Connect 17
+#define SC_Connect 17
 // #define SC_Send 18
 // #define SC_Receive 19
 
@@ -177,7 +177,9 @@ int ThreadJoin(ThreadId id);
 void ThreadExit(int ExitCode);
 
 int SocketTCP();
-
+int Connect(int socketid, char *ip, int port);
+// int Send(int socketid, char *buffer, int len);
+// int Receive(int socketid, char *buffer, int len)
 #endif /* IN_ASM */
 
 #endif /* SYSCALL_H */
