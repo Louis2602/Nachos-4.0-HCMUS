@@ -13,7 +13,7 @@
     - Run commands: make all
     - Make sure to check `start.S` file, if it doesn't not have your syscall, add it up.
 - Make sure to run this command after making any changes: `cd ./NachOS-4.0/code/build.linux && make depend && make`. If there is any error, try to fix it and recompile the code.
-- Run this command to test the program: `cd ./NachOS-4.0/code/test` and `../build.linux/nachos -x `name_of_the_file`` (Ex: create, halt, add, etc.) and checking the result. Ex: For Create Syscall function, it will creates a file named 'file.txt', if that file is existed in test folder then our program works succesfully!
+- Run this command to test the program: `cd ./NachOS-4.0/code/test` and `../build.linux/nachos -x 'name_of_the_file'` (Ex: create, halt, add, etc.) and checking the result. Ex: For Create Syscall function, it will creates a file named 'file.txt', if that file is existed in test folder then our program works succesfully!
 
 ## HOW TO INSTALL WSL2 ON WINDOWS:
 1. Open cmd or powershell with admin and run this: `wsl --install`. If you are already turn on the Window subsystem for linux then run this: `wsl --install -d ubuntu`
