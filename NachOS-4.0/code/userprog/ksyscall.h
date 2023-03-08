@@ -44,11 +44,13 @@ bool SysCreate(char *fileName)
     if (!kernel->fileSystem->Create(fileName, 0))
     {
       DEBUG(dbgSys, "\nError creating file");
+      printf("Erroe creating file `%s`.\n", fileName);
       success = false;
     }
     else
     {
       DEBUG(dbgSys, "Creating a file successfully.\n");
+      printf("Creating a file `%s` successfully.\n", fileName);
       success = true;
     }
   }
@@ -57,22 +59,28 @@ bool SysCreate(char *fileName)
 }
 int SysOpen(char *fileName, int type)
 {
-  if (type != 0 && type != 1)
-    return -1;
-  // Open file successfully
-  if (kernel->fileSystem->Open(fileName))
-  {
-    DEBUG(dbgSys, "\nOpened file");
-  }
+  // if (type != 0 && type != 1)
+  //   return -1;
+  // // Open file successfully
+  // if (kernel->fileSystem->Open(fileName))
+  // {
+  //   DEBUG(dbgSys, "\nOpened file");
+  // }
   return 1;
 }
 
 int SysClose(int id)
 {
-  return kernel->fileSystem->Close(id);
+  // return kernel->fileSystem->Close(id);
+  return 1;
 }
 int SysSocketTCP()
 {
-  return kernel->fileSystem->SocketTCP();
+  int sockID = kernel->fileSystem->SocketTCP();
+  if (sockID)
+    printf("Connect to socket with ID: `%d` successfully.\n", sockID);
+  else
+    printf("Fail to connect to socket with ID: `%d`.\n", sockID);
+  return sockID;
 }
 #endif /* ! __USERPROG_KSYSCALL_H__ */

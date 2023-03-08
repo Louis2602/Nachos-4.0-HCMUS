@@ -178,6 +178,14 @@ ThreadJoin:
 	j 	$31
 	.end ThreadJoin
 	
+	.globl SocketTCP
+	.ent    SocketTCP
+SocketTCP:
+	addiu $2, $0, SC_SocketTCP
+	syscall
+	j 	$31
+	.end SocketTCP
+	
 /* dummy function to keep gcc happy */
         .globl  __main
         .ent    __main

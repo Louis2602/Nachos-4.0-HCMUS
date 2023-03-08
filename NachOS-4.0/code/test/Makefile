@@ -112,7 +112,7 @@ ifeq ($(hosttype),unknown)
 PROGRAMS = unknownhost
 else
 # change this if you create a new test program!
-PROGRAMS = add halt shell matmult sort segments create
+PROGRAMS = add halt shell matmult sort segments create socket_tcp
 endif
 
 all: $(PROGRAMS)
@@ -159,10 +159,15 @@ matmult: matmult.o start.o
 
 create.o: create.c
 	$(CC) $(CFLAGS) -c create.c
-
 create: create.o start.o
 	$(LD) $(LDFLAGS) start.o create.o -o create.coff
 	$(COFF2NOFF) create.coff create
+
+socket_tcp.o: socket_tcp.c
+	$(CC) $(CFLAGS) -c socket_tcp.c
+socket_tcp: socket_tcp.o start.o
+	$(LD) $(LDFLAGS) start.o socket_tcp.o -o socket_tcp.coff
+	$(COFF2NOFF) socket_tcp.coff socket_tcp
 
 clean:
 	$(RM) -f *.o *.ii

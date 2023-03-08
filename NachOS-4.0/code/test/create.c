@@ -3,4 +3,5 @@
 int main()
 {
     Create("file.txt");
+    Halt();
 }
