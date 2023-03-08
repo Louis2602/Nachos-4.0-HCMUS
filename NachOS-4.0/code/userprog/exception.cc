@@ -22,9 +22,9 @@
 // of liability and disclaimer of warranty provisions.
 
 #include "copyright.h"
+#include "ksyscall.h"
 #include "main.h"
 #include "syscall.h"
-#include "ksyscall.h"
 //----------------------------------------------------------------------
 // ExceptionHandler
 // 	Entry point into the Nachos kernel.  Called when a user program
@@ -53,22 +53,22 @@
  * Modify program counter
  * This code is adapted from `../machine/mipssim.cc`, line 667
  **/
-void move_program_counter()
-{
+void move_program_counter() {
   /* set previous programm counter (debugging only)
    * similar to: registers[PrevPCReg] = registers[PCReg];*/
-  kernel->machine->WriteRegister(PrevPCReg, kernel->machine->ReadRegister(PCReg));
+  kernel->machine->WriteRegister(PrevPCReg,
+                                 kernel->machine->ReadRegister(PCReg));
   /* set programm counter to next instruction
    * similar to: registers[PCReg] = registers[NextPCReg]*/
-  kernel->machine->WriteRegister(PCReg, kernel->machine->ReadRegister(NextPCReg));
+  kernel->machine->WriteRegister(PCReg,
+                                 kernel->machine->ReadRegister(NextPCReg));
   /* set next programm counter for brach execution
    * similar to: registers[NextPCReg] = pcAfter;*/
-  kernel->machine->WriteRegister(
-      NextPCReg, kernel->machine->ReadRegister(NextPCReg) + 4);
+  kernel->machine->WriteRegister(NextPCReg,
+                                 kernel->machine->ReadRegister(NextPCReg) + 4);
 }
 
-char *User2System(int virtAddr, int limit)
-{
+char *User2System(int virtAddr, int limit) {
   int i; // index
   int oneChar;
   char *kernelBuf = NULL;
@@ -79,8 +79,7 @@ char *User2System(int virtAddr, int limit)
   memset(kernelBuf, 0, limit + 1);
 
   // printf("\n Filename u2s:");
-  for (i = 0; i < limit; i++)
-  {
+  for (i = 0; i < limit; i++) {
     kernel->machine->ReadMem(virtAddr + i, 1, &oneChar);
     kernelBuf[i] = (char)oneChar;
     // printf("%c",kernelBuf[i]);
@@ -89,16 +88,14 @@ char *User2System(int virtAddr, int limit)
   }
   return kernelBuf;
 }
-int System2User(int virtAddr, int len, char *buffer)
-{
+int System2User(int virtAddr, int len, char *buffer) {
   if (len < 0)
     return -1;
   if (len == 0)
     return len;
   int i = 0;
   int oneChar = 0;
-  do
-  {
+  do {
     oneChar = (int)buffer[i];
     kernel->machine->WriteMem(virtAddr + i, 1, oneChar);
     i++;
@@ -106,14 +103,12 @@ int System2User(int virtAddr, int len, char *buffer)
   return i;
 }
 
-void handle_SC_Halt()
-{
+void handle_SC_Halt() {
   DEBUG(dbgSys, "Shutdown, initiated by user program.\n");
   SysHalt();
   ASSERTNOTREACHED();
 }
-void handle_SC_Create()
-{
+void handle_SC_Create() {
   int virtAddr = kernel->machine->ReadRegister(4);
   char *fileName = User2System(virtAddr, MaxFileLength + 1);
 
@@ -125,47 +120,9 @@ void handle_SC_Create()
   delete[] fileName;
   return move_program_counter();
 }
-void handle_SC_Open()
-{
-  int virtAddr = kernel->machine->ReadRegister(4);
-  char *fileName = User2System(virtAddr, MaxFileLength + 1);
-  // type: OpenForRead - OpenForWrite - OpenForReadWrite
-  int type = kernel->machine->ReadRegister(5);
-  kernel->machine->WriteRegister(2, SysOpen(fileName, type));
-
-  delete[] fileName;
-  return move_program_counter();
-}
-void handle_SC_Close()
-{
-  int id = kernel->machine->ReadRegister(4);
-  kernel->machine->WriteRegister(2, SysClose(id));
-  return move_program_counter();
-}
-void handle_SC_Read()
-{
-  return move_program_counter();
-}
-void handle_SC_Write()
-{
-  return move_program_counter();
-}
-void handle_SC_Seek()
-{
-  return move_program_counter();
-}
-void handle_SC_Remove()
-{
-  return move_program_counter();
-}
-void handle_SC_SocketTCP()
-{
-  kernel->machine->WriteRegister(2, SysSocketTCP());
-  return move_program_counter();
-}
-void handle_SC_Add()
-{
-  DEBUG(dbgSys, "Add " << kernel->machine->ReadRegister(4) << " + " << kernel->machine->ReadRegister(5) << "\n");
+void handle_SC_Add() {
+  DEBUG(dbgSys, "Add " << kernel->machine->ReadRegister(4) << " + "
+                       << kernel->machine->ReadRegister(5) << "\n");
   /* Process SysAdd Systemcall*/
   int result;
   result = SysAdd(/* int op1 */ (int)kernel->machine->ReadRegister(4),
@@ -176,23 +133,25 @@ void handle_SC_Add()
   /* Modify return point */
   {
     /* set previous programm counter (debugging only)*/
-    kernel->machine->WriteRegister(PrevPCReg, kernel->machine->ReadRegister(PCReg));
-    /* set programm counter to next instruction (all Instructions are 4 byte wide)*/
-    kernel->machine->WriteRegister(PCReg, kernel->machine->ReadRegister(PCReg) + 4);
+    kernel->machine->WriteRegister(PrevPCReg,
+                                   kernel->machine->ReadRegister(PCReg));
+    /* set programm counter to next instruction (all Instructions are 4 byte
+     * wide)*/
+    kernel->machine->WriteRegister(PCReg,
+                                   kernel->machine->ReadRegister(PCReg) + 4);
     /* set next programm counter for brach execution */
-    kernel->machine->WriteRegister(NextPCReg, kernel->machine->ReadRegister(PCReg) + 4);
+    kernel->machine->WriteRegister(NextPCReg,
+                                   kernel->machine->ReadRegister(PCReg) + 4);
   }
   return;
   ASSERTNOTREACHED();
 }
-void ExceptionHandler(ExceptionType which)
-{
+void ExceptionHandler(ExceptionType which) {
   int type = kernel->machine->ReadRegister(2);
 
   DEBUG(dbgSys, "Received Exception " << which << " type: " << type << "\n");
 
-  switch (which)
-  {
+  switch (which) {
   case NoException:
     kernel->interrupt->setStatus(SystemMode);
     DEBUG(dbgSys, "Switch to system mode\n");
@@ -213,8 +172,10 @@ void ExceptionHandler(ExceptionType which)
     kernel->interrupt->Halt();
     break;
   case AddressErrorException:
-    DEBUG('a', "\n Unaligned reference or one that was beyond the end of the address space");
-    printf("\n\n Unaligned reference or one that was beyond the end of the address space");
+    DEBUG('a', "\n Unaligned reference or one that was beyond the end of the "
+               "address space");
+    printf("\n\n Unaligned reference or one that was beyond the end of the "
+           "address space");
     kernel->interrupt->Halt();
     break;
   case OverflowException:
@@ -233,8 +194,7 @@ void ExceptionHandler(ExceptionType which)
     kernel->interrupt->Halt();
     break;
   case SyscallException:
-    switch (type)
-    {
+    switch (type) {
     case SC_Halt:
       return handle_SC_Halt();
     case SC_Add:
@@ -242,20 +202,19 @@ void ExceptionHandler(ExceptionType which)
     case SC_Create:
       return handle_SC_Create();
     case SC_Open:
-      return handle_SC_Open();
+      break;
     case SC_Close:
-      return handle_SC_Close();
+      break;
     case SC_Read:
-      return handle_SC_Read();
+      break;
     case SC_Write:
-      return handle_SC_Write();
+      break;
     case SC_Seek:
-      return handle_SC_Seek();
+      break;
     case SC_Remove:
-      return handle_SC_Remove();
+      break;
     // for socket using network folder to implement
-    case SC_SocketTCP:
-      return handle_SC_SocketTCP();
+    // case SC_socketTCP:
     // case SC_Connect:
     // case SC_Send:
     // case SC_Receive:
