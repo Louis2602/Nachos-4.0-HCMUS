@@ -36,6 +36,8 @@
 #include "copyright.h"
 #include "sysdep.h"
 #include "openfile.h"
+#include <sys/socket.h>
+#include <arpa/inet.h> //inet_addr
 
 #ifdef FILESYS_STUB // Temporarily implement file system calls as
 // calls to UNIX, until the real file system
@@ -68,6 +70,32 @@ public:
   {
     int sockID = OpenSocket();
     return sockID;
+  }
+  int Connect(int socketid, char *ip, int port)
+  {
+    int sockID = OpenSocket();
+    return sockID;
+    // Creating socket file descriptor
+    // if (socketid == -1)
+    // {
+    //   printf("Error: Could not create socket");
+    //   return -1;
+    // }
+    // struct sockaddr_in server;
+
+    // server.sin_family = AF_INET;
+    // server.sin_addr.s_addr = inet_addr(ip);
+    // server.sin_port = htons(port);
+    // printf("HERE");
+
+    // // Connect to remote server
+    // if (connect(socketid, (struct sockaddr *)&server, sizeof(server)) < 0)
+    // {
+    //   printf("Error: Fail to connect to remote server");
+    //   return -1;
+    // }
+    // printf("Success: Connected to remote server");
+    // return 0;
   }
   bool Remove(char *name) { return Unlink(name) == 0; }
 };

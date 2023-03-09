@@ -47,7 +47,8 @@
 #define NO_MPROT
 #endif
 
-extern "C" {
+extern "C"
+{
 #include <signal.h>
 #include <sys/types.h>
 
@@ -55,19 +56,19 @@ extern "C" {
 #include <sys/mman.h>
 #endif
 
-// UNIX routines called by procedures in this file
+  // UNIX routines called by procedures in this file
 
 #if defined CYGWIN
-size_t getpagesize(void);
+  size_t getpagesize(void);
 #else
-int getpagesize(void);
+  int getpagesize(void);
 #endif
-unsigned sleep(unsigned);
-// #ifdef SOLARIS
-// int usleep(useconds_t);
-// #else
-// void usleep(unsigned int);  // rcgood - to avoid spinning processes.
-// #endif
+  unsigned sleep(unsigned);
+  // #ifdef SOLARIS
+  // int usleep(useconds_t);
+  // #else
+  // void usleep(unsigned int);  // rcgood - to avoid spinning processes.
+  // #endif
 
 #ifndef NO_MPROT
 
@@ -79,29 +80,29 @@ unsigned sleep(unsigned);
 #endif
 
 #ifdef OSF_OR_AIX
-int mprotect(const void *, long unsigned int, int);
+  int mprotect(const void *, long unsigned int, int);
 #else
-int mprotect(char *, unsigned int, int);
+  int mprotect(char *, unsigned int, int);
 #endif
 #endif
 
 #if defined(BSD) || defined(SOLARIS) || defined(LINUX)
-// KMS
-//  added Solaris and LINUX
-int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
-           struct timeval *timeout);
+  // KMS
+  //  added Solaris and LINUX
+  int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
+             struct timeval *timeout);
 #else
-int select(int numBits, void *readFds, void *writeFds, void *exceptFds,
-           struct timeval *timeout);
+  int select(int numBits, void *readFds, void *writeFds, void *exceptFds,
+             struct timeval *timeout);
 #endif
 
-int socket(int, int, int);
+  int socket(int, int, int);
 
 #if defined(SUNOS) || defined(ULTRIX)
-long tell(int);
-int bind(int, const void *, int);
-int recvfrom(int, void *, int, int, void *, int *);
-int sendto(int, const void *, int, int, void *, int);
+  long tell(int);
+  int bind(int, const void *, int);
+  int recvfrom(int, void *, int, int, void *, int *);
+  int sendto(int, const void *, int, int, void *, int);
 #endif
 }
 
@@ -128,7 +129,8 @@ void Delay(int seconds) { (void)sleep((unsigned)seconds); }
 //	to prevent an idle Nachos process from spinning...
 //----------------------------------------------------------------------
 
-void UDelay(unsigned int useconds) {
+void UDelay(unsigned int useconds)
+{
   // #ifdef SOLARIS
   //    usleep(useconds_t useconds);
   // #else
@@ -177,7 +179,8 @@ unsigned int RandomNumber() { return rand(); }
 //	"size" -- amount of useful space needed (in bytes)
 //----------------------------------------------------------------------
 
-char *AllocBoundedArray(int size) {
+char *AllocBoundedArray(int size)
+{
 #ifdef NO_MPROT
   return new char[size];
 #else
@@ -199,9 +202,13 @@ char *AllocBoundedArray(int size) {
 //----------------------------------------------------------------------
 
 #ifdef NO_MPROT
-void DeallocBoundedArray(char *ptr, int /* size */) { delete[] ptr; }
+void DeallocBoundedArray(char *ptr, int /* size */)
+{
+  delete[] ptr;
+}
 #else
-void DeallocBoundedArray(char *ptr, int size) {
+void DeallocBoundedArray(char *ptr, int size)
+{
   int pgSize = getpagesize();
 
   mprotect(ptr - pgSize, pgSize, PROT_READ | PROT_WRITE | PROT_EXEC);
@@ -219,7 +226,8 @@ void DeallocBoundedArray(char *ptr, int size) {
 //	"fd" -- the file descriptor of the file to be polled
 //----------------------------------------------------------------------
 
-bool PollFile(int fd) {
+bool PollFile(int fd)
+{
 #if defined(SOLARIS) || defined(LINUX)
   // KMS
   fd_set rfd, wfd, xfd;
@@ -266,7 +274,8 @@ bool PollFile(int fd) {
 //	"name" -- file name
 //----------------------------------------------------------------------
 
-int OpenForWrite(char *name) {
+int OpenForWrite(char *name)
+{
   int fd = open(name, O_RDWR | O_CREAT | O_TRUNC, 0666);
 
   ASSERT(fd >= 0);
@@ -281,7 +290,8 @@ int OpenForWrite(char *name) {
 //	"name" -- file name
 //----------------------------------------------------------------------
 
-int OpenForReadWrite(char *name, bool crashOnError) {
+int OpenForReadWrite(char *name, bool crashOnError)
+{
   int fd = open(name, O_RDWR, 0);
 
   ASSERT(!crashOnError || fd >= 0);
@@ -293,7 +303,8 @@ int OpenForReadWrite(char *name, bool crashOnError) {
 // 	Read characters from an open file.  Abort if read fails.
 //----------------------------------------------------------------------
 
-void Read(int fd, char *buffer, int nBytes) {
+void Read(int fd, char *buffer, int nBytes)
+{
   int retVal = read(fd, buffer, nBytes);
   ASSERT(retVal == nBytes);
 }
@@ -304,7 +315,8 @@ void Read(int fd, char *buffer, int nBytes) {
 //	available.
 //----------------------------------------------------------------------
 
-int ReadPartial(int fd, char *buffer, int nBytes) {
+int ReadPartial(int fd, char *buffer, int nBytes)
+{
   return read(fd, buffer, nBytes);
 }
 
@@ -313,7 +325,8 @@ int ReadPartial(int fd, char *buffer, int nBytes) {
 // 	Write characters to an open file.  Abort if write fails.
 //----------------------------------------------------------------------
 
-void WriteFile(int fd, char *buffer, int nBytes) {
+void WriteFile(int fd, char *buffer, int nBytes)
+{
   int retVal = write(fd, buffer, nBytes);
   ASSERT(retVal == nBytes);
 }
@@ -323,7 +336,8 @@ void WriteFile(int fd, char *buffer, int nBytes) {
 // 	Change the location within an open file.  Abort on error.
 //----------------------------------------------------------------------
 
-void Lseek(int fd, int offset, int whence) {
+void Lseek(int fd, int offset, int whence)
+{
   int retVal = lseek(fd, offset, whence);
   ASSERT(retVal >= 0);
 }
@@ -333,7 +347,8 @@ void Lseek(int fd, int offset, int whence) {
 // 	Report the current location within an open file.
 //----------------------------------------------------------------------
 
-int Tell(int fd) {
+int Tell(int fd)
+{
 #if defined(BSD) || defined(SOLARIS) || defined(LINUX)
   return lseek(fd, 0, SEEK_CUR); // 386BSD doesn't have the tell() system call
                                  // neither do Solaris and Linux  -KMS
@@ -347,7 +362,8 @@ int Tell(int fd) {
 // 	Close a file.  Abort on error.
 //----------------------------------------------------------------------
 
-int Close(int fd) {
+int Close(int fd)
+{
   int retVal = close(fd);
   ASSERT(retVal >= 0);
   return retVal;
@@ -367,7 +383,8 @@ bool Unlink(char *name) { return unlink(name); }
 //	workstations on a network) can send messages to this Nachos.
 //----------------------------------------------------------------------
 
-int OpenSocket() {
+int OpenSocket()
+{
   int sockID;
 
   sockID = socket(AF_UNIX, SOCK_DGRAM, 0);
@@ -388,7 +405,8 @@ void CloseSocket(int sockID) { (void)close(sockID); }
 // 	Initialize a UNIX socket address -- magical!
 //----------------------------------------------------------------------
 
-static void InitSocketName(struct sockaddr_un *uname, char *name) {
+static void InitSocketName(struct sockaddr_un *uname, char *name)
+{
   uname->sun_family = AF_UNIX;
   strcpy(uname->sun_path, name);
 }
@@ -399,7 +417,8 @@ static void InitSocketName(struct sockaddr_un *uname, char *name) {
 //	can locate the port.
 //----------------------------------------------------------------------
 
-void AssignNameToSocket(char *socketName, int sockID) {
+void AssignNameToSocket(char *socketName, int sockID)
+{
   struct sockaddr_un uName;
   int retVal;
 
@@ -422,7 +441,8 @@ void DeAssignNameToSocket(char *socketName) { (void)unlink(socketName); }
 // 	Return TRUE if there are any messages waiting to arrive on the
 //	IPC port.
 //----------------------------------------------------------------------
-bool PollSocket(int sockID) {
+bool PollSocket(int sockID)
+{
   return PollFile(sockID); // on UNIX, socket ID's are just file ID's
 }
 
@@ -430,7 +450,8 @@ bool PollSocket(int sockID) {
 // ReadFromSocket
 // 	Read a fixed size packet off the IPC port.  Abort on error.
 //----------------------------------------------------------------------
-void ReadFromSocket(int sockID, char *buffer, int packetSize) {
+void ReadFromSocket(int sockID, char *buffer, int packetSize)
+{
   int retVal;
   struct sockaddr_un uName;
 #ifdef LINUX
@@ -442,7 +463,8 @@ void ReadFromSocket(int sockID, char *buffer, int packetSize) {
   retVal =
       recvfrom(sockID, buffer, packetSize, 0, (struct sockaddr *)&uName, &size);
 
-  if (retVal != packetSize) {
+  if (retVal != packetSize)
+  {
     perror("in recvfrom");
 #if defined CYGWIN
     cerr << "called with " << packetSize << ", got back " << retVal << ", and "
@@ -464,14 +486,16 @@ void ReadFromSocket(int sockID, char *buffer, int packetSize) {
 //      to get set up.
 //      Terminate if we still fail after 10 tries.
 //----------------------------------------------------------------------
-void SendToSocket(int sockID, char *buffer, int packetSize, char *toName) {
+void SendToSocket(int sockID, char *buffer, int packetSize, char *toName)
+{
   struct sockaddr_un uName;
   int retVal;
   int retryCount;
 
   InitSocketName(&uName, toName);
 
-  for (retryCount = 0; retryCount < 10; retryCount++) {
+  for (retryCount = 0; retryCount < 10; retryCount++)
+  {
     retVal = sendto(sockID, buffer, packetSize, 0, (struct sockaddr *)&uName,
                     sizeof(uName));
     if (retVal == packetSize)

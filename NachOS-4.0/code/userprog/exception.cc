@@ -53,7 +53,8 @@
  * Modify program counter
  * This code is adapted from `../machine/mipssim.cc`, line 667
  **/
-void move_program_counter() {
+void move_program_counter()
+{
   /* set previous programm counter (debugging only)
    * similar to: registers[PrevPCReg] = registers[PCReg];*/
   kernel->machine->WriteRegister(PrevPCReg,
@@ -68,7 +69,8 @@ void move_program_counter() {
                                  kernel->machine->ReadRegister(NextPCReg) + 4);
 }
 
-char *User2System(int virtAddr, int limit) {
+char *User2System(int virtAddr, int limit)
+{
   int i; // index
   int oneChar;
   char *kernelBuf = NULL;
@@ -79,7 +81,8 @@ char *User2System(int virtAddr, int limit) {
   memset(kernelBuf, 0, limit + 1);
 
   // printf("\n Filename u2s:");
-  for (i = 0; i < limit; i++) {
+  for (i = 0; i < limit; i++)
+  {
     kernel->machine->ReadMem(virtAddr + i, 1, &oneChar);
     kernelBuf[i] = (char)oneChar;
     // printf("%c",kernelBuf[i]);
@@ -88,14 +91,16 @@ char *User2System(int virtAddr, int limit) {
   }
   return kernelBuf;
 }
-int System2User(int virtAddr, int len, char *buffer) {
+int System2User(int virtAddr, int len, char *buffer)
+{
   if (len < 0)
     return -1;
   if (len == 0)
     return len;
   int i = 0;
   int oneChar = 0;
-  do {
+  do
+  {
     oneChar = (int)buffer[i];
     kernel->machine->WriteMem(virtAddr + i, 1, oneChar);
     i++;
@@ -103,12 +108,14 @@ int System2User(int virtAddr, int len, char *buffer) {
   return i;
 }
 
-void handle_SC_Halt() {
+void handle_SC_Halt()
+{
   DEBUG(dbgSys, "Shutdown, initiated by user program.\n");
   SysHalt();
   ASSERTNOTREACHED();
 }
-void handle_SC_Create() {
+void handle_SC_Create()
+{
   int virtAddr = kernel->machine->ReadRegister(4);
   char *fileName = User2System(virtAddr, MaxFileLength + 1);
 
@@ -120,7 +127,8 @@ void handle_SC_Create() {
   delete[] fileName;
   return move_program_counter();
 }
-void handle_SC_Open() {
+void handle_SC_Open()
+{
   int virtAddr = kernel->machine->ReadRegister(4);
   char *fileName = User2System(virtAddr, MaxFileLength + 1);
   // type: OpenForRead - OpenForWrite - OpenForReadWrite
@@ -130,7 +138,8 @@ void handle_SC_Open() {
   delete[] fileName;
   return move_program_counter();
 }
-void handle_SC_Close() {
+void handle_SC_Close()
+{
   int id = kernel->machine->ReadRegister(4);
   kernel->machine->WriteRegister(2, SysClose(id));
   return move_program_counter();
@@ -139,19 +148,18 @@ void handle_SC_Read() { return move_program_counter(); }
 void handle_SC_Write() { return move_program_counter(); }
 void handle_SC_Seek() { return move_program_counter(); }
 void handle_SC_Remove() { return move_program_counter(); }
-void handle_SC_SocketTCP() {
+void handle_SC_SocketTCP()
+{
   kernel->machine->WriteRegister(2, SysSocketTCP());
   return move_program_counter();
 }
-void handle_SC_Connect() {
-  char *ip = '127.0.0.1';
-  int port = 80;
-  int sockID = kernel->fileSystem->SocketTCP();
-
-  kernel->machine->WriteRegister(2, SysConnect(sockID, ip, port));
+void handle_SC_Connect()
+{
+  kernel->machine->WriteRegister(2, SysConnect());
   return move_program_counter();
 }
-void handle_SC_Add() {
+void handle_SC_Add()
+{
   DEBUG(dbgSys, "Add " << kernel->machine->ReadRegister(4) << " + "
                        << kernel->machine->ReadRegister(5) << "\n");
   /* Process SysAdd Systemcall*/
@@ -177,12 +185,14 @@ void handle_SC_Add() {
   return;
   ASSERTNOTREACHED();
 }
-void ExceptionHandler(ExceptionType which) {
+void ExceptionHandler(ExceptionType which)
+{
   int type = kernel->machine->ReadRegister(2);
 
   DEBUG(dbgSys, "Received Exception " << which << " type: " << type << "\n");
 
-  switch (which) {
+  switch (which)
+  {
   case NoException:
     kernel->interrupt->setStatus(SystemMode);
     DEBUG(dbgSys, "Switch to system mode\n");
@@ -225,7 +235,8 @@ void ExceptionHandler(ExceptionType which) {
     kernel->interrupt->Halt();
     break;
   case SyscallException:
-    switch (type) {
+    switch (type)
+    {
     case SC_Halt:
       return handle_SC_Halt();
     case SC_Add:

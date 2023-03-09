@@ -185,6 +185,14 @@ SocketTCP:
 	syscall
 	j 	$31
 	.end SocketTCP
+
+	.globl Connect
+	.ent    Connect
+Connect:
+	addiu $2, $0, SC_Connect
+	syscall
+	j 	$31
+	.end Connect
 	
 /* dummy function to keep gcc happy */
         .globl  __main
