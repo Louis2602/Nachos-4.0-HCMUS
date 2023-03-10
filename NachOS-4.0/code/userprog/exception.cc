@@ -120,7 +120,43 @@ void handle_SC_Create() {
   delete[] fileName;
   return move_program_counter();
 }
-void handle_SC_Add() {
+void handle_SC_Open()
+{
+  int virtAddr = kernel->machine->ReadRegister(4);
+  char *fileName = User2System(virtAddr, MaxFileLength + 1);
+  // type: OpenForRead - OpenForWrite - OpenForReadWrite
+  int type = kernel->machine->ReadRegister(5);
+  kernel->machine->WriteRegister(2, SysOpen(fileName, type));
+
+  delete[] fileName;
+  return move_program_counter();
+}
+void handle_SC_Close()
+{
+  int id = kernel->machine->ReadRegister(4);
+  kernel->machine->WriteRegister(2, SysClose(id));
+  return move_program_counter();
+}
+void handle_SC_Read() { return move_program_counter(); }
+void handle_SC_Write() { return move_program_counter(); }
+void handle_SC_Seek() { return move_program_counter(); }
+void handle_SC_Remove() { return move_program_counter(); }
+void handle_SC_SocketTCP()
+{
+  kernel->machine->WriteRegister(2, SysSocketTCP());
+  return move_program_counter();
+}
+void handle_SC_Connect()
+{
+  int virtAddr = kernel->machine->ReadRegister(4);
+  char *fileName = User2System(virtAddr, MaxFileLength + 1);
+  printf("virtAddr: %d\n", virtAddr);
+  int socketid = OpenSocket();
+  kernel->machine->WriteRegister(2, SysConnect(socketid, "127.0.0.1", 9001));
+  return move_program_counter();
+}
+void handle_SC_Add()
+{
   DEBUG(dbgSys, "Add " << kernel->machine->ReadRegister(4) << " + "
                        << kernel->machine->ReadRegister(5) << "\n");
   /* Process SysAdd Systemcall*/
@@ -214,8 +250,10 @@ void ExceptionHandler(ExceptionType which) {
     case SC_Remove:
       break;
     // for socket using network folder to implement
-    // case SC_socketTCP:
-    // case SC_Connect:
+    case SC_SocketTCP:
+      return handle_SC_SocketTCP();
+    case SC_Connect:
+      return handle_SC_Connect();
     // case SC_Send:
     // case SC_Receive:
     default:

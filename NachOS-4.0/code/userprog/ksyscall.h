@@ -11,7 +11,7 @@
 #ifndef __USERPROG_KSYSCALL_H__
 #define __USERPROG_KSYSCALL_H__
 
-#include "kernel.h"
+#include "main.h"
 
 void SysHalt() { kernel->interrupt->Halt(); }
 
@@ -60,10 +60,19 @@ int SysClose(int id)
 int SysSocketTCP()
 {
   int sockID = kernel->fileSystem->SocketTCP();
-  if (sockID)
-    printf("Connect to socket with ID: `%d` successfully.\n", sockID);
-  else
-    printf("Fail to connect to socket with ID: `%d`.\n", sockID);
+  printf("Socket ID: `%d`.\n", sockID);
   return sockID;
 }
+
+int SysConnect(int socketid, char *ip, int port)
+{
+  // char *ip = "127.0.0.1";
+  // int port = 80;
+  // int socketid = OpenSocket();
+
+  int success = kernel->fileSystem->Connect(socketid, ip, port);
+  printf("Success: %d\n", success);
+  return success;
+}
+
 #endif /* ! __USERPROG_KSYSCALL_H__ */
