@@ -155,7 +155,11 @@ void handle_SC_SocketTCP()
 }
 void handle_SC_Connect()
 {
-  kernel->machine->WriteRegister(2, SysConnect());
+  int virtAddr = kernel->machine->ReadRegister(4);
+  char *fileName = User2System(virtAddr, MaxFileLength + 1);
+  printf("virtAddr: %d\n", virtAddr);
+  int socketid = OpenSocket();
+  kernel->machine->WriteRegister(2, SysConnect(socketid, "127.0.0.1", 9001));
   return move_program_counter();
 }
 void handle_SC_Add()

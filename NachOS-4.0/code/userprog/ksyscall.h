@@ -75,15 +75,15 @@ int SysSocketTCP()
   return sockID;
 }
 
-int SysConnect()
+int SysConnect(int socketid, char *ip, int port)
 {
-  char *ip = "127.0.0.1";
-  int port = 80;
-  int sockID = OpenSocket();
+  // char *ip = "127.0.0.1";
+  // int port = 80;
+  // int socketid = OpenSocket();
 
-  int status = kernel->fileSystem->Connect(sockID, ip, port);
-  printf("Status: %d\n", status);
-  return status;
+  int success = kernel->fileSystem->Connect(socketid, ip, port);
+  printf("Success: %d\n", success);
+  return success;
 }
 
 #endif /* ! __USERPROG_KSYSCALL_H__ */

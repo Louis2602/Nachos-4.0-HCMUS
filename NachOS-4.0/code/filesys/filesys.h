@@ -68,67 +68,51 @@ public:
 
   int SocketTCP()
   {
-    int sockID = OpenSocket();
-    return sockID;
+    int MAX_FDS = 20;
+    int fd_table[MAX_FDS];
+    // Index of the next available file descriptor
+    int next_fd = 0;
+    int sockfd = OpenSocket();
+    if (sockfd == -1)
+      return -1;
+    // Check if we have reached the maximum number of file descriptors
+    if (next_fd >= MAX_FDS)
+    {
+      CloseSocket(sockfd);
+      return -1;
+    }
+    fd_table[next_fd] = sockfd;
+    next_fd++;
+
+    return sockfd;
   }
   int Connect(int socketid, char *ip, int port)
   {
-    // // Open a socket
-    // printf("Connect to socket with ID: `%d`\n", socketid);
-    // AssignNameToSocket("Testing socket", socketid); // Bind socket to a filename
-    // // Creating socket file descriptor
-    // if (socketid == -1)
-    // {
-    //   printf("Error: Could not create socket\n");
-    //   return -1;
-    // }
-    // struct sockaddr_in server;
-
-    // server.sin_family = AF_INET;
-    // server.sin_addr.s_addr = inet_addr(ip);
-    // // server.sin_addr.s_addr = INADDR_ANY;
-    // server.sin_port = htons(port);
-
-    // // Connect to remote server
-    // if (connect(socketid, (struct sockaddr *)&server, sizeof(server)) < 0)
-    // {
-    //   printf("Error: Fail to connect to remote server\n");
-    //   return -1;
-    // }
-    // else
-    // {
-    //   printf("Success: Connected to remote server\n");
-    //   char strData[255];
-    //   recv(socketid, strData, sizeof(strData), 0);
-    //   printf("Message: %s\n", strData);
-    // }
-    // return 0;
-    int sockD = socket(AF_INET, SOCK_STREAM, 0);
-    printf("SocketID: %d\n", sockD);
+    printf("SocketID: %d\n", socketid);
+    printf("Ip: %s\n", ip);
+    printf("Port: %d\n", port);
 
     struct sockaddr_in servAddr;
+    memset(&servAddr, 0, sizeof(servAddr)); // Clear the server address structure
 
-    servAddr.sin_family = AF_INET;
-    servAddr.sin_port = htons(9001); // use some unused port number
+    servAddr.sin_family = AF_UNIX;
+    servAddr.sin_port = htons(9001);
     servAddr.sin_addr.s_addr = INADDR_ANY;
+    // inet_pton(AF_INET, ip, &servAddr.sin_addr); // Convert IP address to binary form
 
-    int connectStatus = connect(sockD, (struct sockaddr *)&servAddr,
+    int connectStatus = connect(socketid, (struct sockaddr *)&servAddr,
                                 sizeof(servAddr));
-
     if (connectStatus == -1)
     {
-      printf("Error...\n");
+      printf("Error: Fail to connect to a socket\n");
+      return -1;
     }
-
     else
     {
       char strData[255];
-
-      recv(sockD, strData, sizeof(strData), 0);
-
+      recv(socketid, strData, sizeof(strData), 0);
       printf("Message: %s\n", strData);
     }
-
     return 0;
   }
   bool Remove(char *name) { return Unlink(name) == 0; }
