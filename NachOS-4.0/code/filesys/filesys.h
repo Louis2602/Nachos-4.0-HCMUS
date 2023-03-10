@@ -73,29 +73,63 @@ public:
   }
   int Connect(int socketid, char *ip, int port)
   {
-    int sockID = OpenSocket();
-    return sockID;
-    // Creating socket file descriptor
+    // // Open a socket
+    // printf("Connect to socket with ID: `%d`\n", socketid);
+    // AssignNameToSocket("Testing socket", socketid); // Bind socket to a filename
+    // // Creating socket file descriptor
     // if (socketid == -1)
     // {
-    //   printf("Error: Could not create socket");
+    //   printf("Error: Could not create socket\n");
     //   return -1;
     // }
     // struct sockaddr_in server;
 
     // server.sin_family = AF_INET;
     // server.sin_addr.s_addr = inet_addr(ip);
+    // // server.sin_addr.s_addr = INADDR_ANY;
     // server.sin_port = htons(port);
-    // printf("HERE");
 
     // // Connect to remote server
     // if (connect(socketid, (struct sockaddr *)&server, sizeof(server)) < 0)
     // {
-    //   printf("Error: Fail to connect to remote server");
+    //   printf("Error: Fail to connect to remote server\n");
     //   return -1;
     // }
-    // printf("Success: Connected to remote server");
+    // else
+    // {
+    //   printf("Success: Connected to remote server\n");
+    //   char strData[255];
+    //   recv(socketid, strData, sizeof(strData), 0);
+    //   printf("Message: %s\n", strData);
+    // }
     // return 0;
+    int sockD = socket(AF_INET, SOCK_STREAM, 0);
+    printf("SocketID: %d\n", sockD);
+
+    struct sockaddr_in servAddr;
+
+    servAddr.sin_family = AF_INET;
+    servAddr.sin_port = htons(9001); // use some unused port number
+    servAddr.sin_addr.s_addr = INADDR_ANY;
+
+    int connectStatus = connect(sockD, (struct sockaddr *)&servAddr,
+                                sizeof(servAddr));
+
+    if (connectStatus == -1)
+    {
+      printf("Error...\n");
+    }
+
+    else
+    {
+      char strData[255];
+
+      recv(sockD, strData, sizeof(strData), 0);
+
+      printf("Message: %s\n", strData);
+    }
+
+    return 0;
   }
   bool Remove(char *name) { return Unlink(name) == 0; }
 };

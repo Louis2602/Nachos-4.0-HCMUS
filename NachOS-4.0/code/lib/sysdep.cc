@@ -387,6 +387,7 @@ int OpenSocket()
 {
   int sockID;
 
+  // UDP
   sockID = socket(AF_UNIX, SOCK_DGRAM, 0);
   ASSERT(sockID >= 0);
 
