@@ -31,9 +31,13 @@ bool SysCreate(char *fileName) {
     DEBUG(dbgSys, "\nFile's name read successfully");
     if (!kernel->fileSystem->Create(fileName, 0)) {
       DEBUG(dbgSys, "\nError creating file");
-      printf("Erroe creating file `%s`.\n", fileName);
+      printf("Error: creating file `%s`.\n", fileName);
       success = false;
-    } else {
+    }
+    else
+    {
+      DEBUG(dbgSys, "Creating a file successfully.\n");
+      printf("Success: Creating a file `%s` successfully.\n", fileName);
       success = true;
     }
   }
