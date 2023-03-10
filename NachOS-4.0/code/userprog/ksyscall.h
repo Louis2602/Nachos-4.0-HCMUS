@@ -77,10 +77,6 @@ int SysSocketTCP()
 
 int SysConnect(int socketid, char *ip, int port)
 {
-  // char *ip = "127.0.0.1";
-  // int port = 80;
-  // int socketid = OpenSocket();
-
   int success = kernel->fileSystem->Connect(socketid, ip, port);
   printf("Success: %d\n", success);
   return success;

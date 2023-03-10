@@ -95,11 +95,10 @@ public:
     struct sockaddr_in servAddr;
     memset(&servAddr, 0, sizeof(servAddr)); // Clear the server address structure
 
-    servAddr.sin_family = AF_UNIX;
-    servAddr.sin_port = htons(9001);
-    servAddr.sin_addr.s_addr = INADDR_ANY;
-    // inet_pton(AF_INET, ip, &servAddr.sin_addr); // Convert IP address to binary form
-
+    servAddr.sin_family = AF_INET;
+    servAddr.sin_port = htons(port);
+    // servAddr.sin_addr.s_addr = INADDR_ANY;
+    inet_pton(AF_INET, ip, &servAddr.sin_addr); // Convert IP address to binary form
     int connectStatus = connect(socketid, (struct sockaddr *)&servAddr,
                                 sizeof(servAddr));
     if (connectStatus == -1)

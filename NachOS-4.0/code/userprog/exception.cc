@@ -158,8 +158,10 @@ void handle_SC_Connect()
   int virtAddr = kernel->machine->ReadRegister(4);
   char *fileName = User2System(virtAddr, MaxFileLength + 1);
   printf("virtAddr: %d\n", virtAddr);
-  int socketid = OpenSocket();
-  kernel->machine->WriteRegister(2, SysConnect(socketid, "127.0.0.1", 9001));
+  int socketid = socket(AF_INET, SOCK_STREAM, 0);
+  char *ip = "127.0.0.1";
+  int port = 9001;
+  kernel->machine->WriteRegister(2, SysConnect(socketid, ip, port));
   return move_program_counter();
 }
 void handle_SC_Add()
