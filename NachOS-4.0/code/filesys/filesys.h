@@ -38,6 +38,7 @@
 #include "openfile.h"
 #include <sys/socket.h>
 #include <arpa/inet.h> //inet_addr
+#include <unistd.h>
 
 #ifdef FILESYS_STUB // Temporarily implement file system calls as
 // calls to UNIX, until the real file system
@@ -71,23 +72,27 @@ public:
     int MAX_FDS = 20;
     int fd_table[MAX_FDS];
     // Index of the next available file descriptor
-    int next_fd = 0;
-    int sockfd = OpenSocket();
-    if (sockfd == -1)
-      return -1;
+    int sockfd, next_fd = 0;
     // Check if we have reached the maximum number of file descriptors
-    if (next_fd >= MAX_FDS)
+    while (next_fd < MAX_FDS)
     {
-      CloseSocket(sockfd);
-      return -1;
+      sockfd = socket(AF_INET, SOCK_STREAM, 0);
+      if (sockfd == -1)
+      {
+        printf("Error: Socket failed.\n");
+        return -1;
+      }
+      fd_table[next_fd] = sockfd;
+      next_fd++;
     }
-    fd_table[next_fd] = sockfd;
-    next_fd++;
+    for (int i = 0; i < MAX_FDS; ++i)
+      printf("Socket number %d has ID: `%d`\n", i + 1, fd_table[i]);
 
     return sockfd;
   }
   int Connect(int socketid, char *ip, int port)
   {
+    printf("======= Start connecting to server =======\n");
     printf("SocketID: %d\n", socketid);
     printf("Ip: %s\n", ip);
     printf("Port: %d\n", port);
@@ -97,22 +102,49 @@ public:
 
     servAddr.sin_family = AF_INET;
     servAddr.sin_port = htons(port);
-    // servAddr.sin_addr.s_addr = INADDR_ANY;
     inet_pton(AF_INET, ip, &servAddr.sin_addr); // Convert IP address to binary form
-    int connectStatus = connect(socketid, (struct sockaddr *)&servAddr,
-                                sizeof(servAddr));
-    if (connectStatus == -1)
+    int rc = connect(socketid, (struct sockaddr *)&servAddr,
+                     sizeof(servAddr));
+    if (rc < 0)
     {
       printf("Error: Fail to connect to a socket\n");
       return -1;
     }
-    else
-    {
-      char strData[255];
-      recv(socketid, strData, sizeof(strData), 0);
-      printf("Message: %s\n", strData);
-    }
     return 0;
+  }
+  int Send(int socketid, char *buffer, int len)
+  {
+    printf("======= Start sending data to server =======\n");
+    printf("Data sent: %s\n", buffer);
+    printf("Size: %d\n", len);
+
+    int rc = send(socketid, buffer, len, 0);
+    if (rc < 0)
+    {
+      printf("Error: Send data to server failed\n");
+      return -1;
+    }
+    printf("Success: Data sent successfully.\n");
+    return rc;
+  }
+  int Receive(int socketid, char *buffer, int len)
+  {
+    printf("======= Start receiving data from server =======\n");
+    int bytesReceived = 0;
+    while (bytesReceived < len)
+    {
+      int rc = recv(socketid, &buffer[bytesReceived], len - bytesReceived, 0);
+      if (rc < 0)
+      {
+        printf("Error: Receive data from server failed\n");
+        return -1;
+      }
+      else if (rc == 0)
+        printf("The server closed the connection\n");
+      bytesReceived += rc;
+    }
+    printf("Success: Data received successfully.\n");
+    return bytesReceived;
   }
   bool Remove(char *name) { return Unlink(name) == 0; }
 };

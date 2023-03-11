@@ -82,4 +82,18 @@ int SysConnect(int socketid, char *ip, int port)
   return success;
 }
 
+int SysSend(int socketid, char *buffer, int len)
+{
+  int noBytes = kernel->fileSystem->Send(socketid, buffer, len);
+  printf("Number of bytes sent: %d\n", noBytes);
+  return noBytes;
+}
+
+int SysReceive(int socketid, char *buffer, int len)
+{
+  int noBytes = kernel->fileSystem->Receive(socketid, buffer, len);
+  printf("Number of bytes receive: %d\n", noBytes);
+  printf("Data received from server: %s\n", buffer);
+  return noBytes;
+}
 #endif /* ! __USERPROG_KSYSCALL_H__ */

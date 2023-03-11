@@ -125,7 +125,8 @@ void handle_SC_Create()
     kernel->machine->WriteRegister(2, -1);
 
   delete[] fileName;
-  return move_program_counter();
+  move_program_counter();
+  return;
 }
 void handle_SC_Open()
 {
@@ -136,33 +137,83 @@ void handle_SC_Open()
   kernel->machine->WriteRegister(2, SysOpen(fileName, type));
 
   delete[] fileName;
-  return move_program_counter();
+  move_program_counter();
+  return;
 }
 void handle_SC_Close()
 {
   int id = kernel->machine->ReadRegister(4);
   kernel->machine->WriteRegister(2, SysClose(id));
-  return move_program_counter();
+  move_program_counter();
+  return;
 }
-void handle_SC_Read() { return move_program_counter(); }
-void handle_SC_Write() { return move_program_counter(); }
-void handle_SC_Seek() { return move_program_counter(); }
-void handle_SC_Remove() { return move_program_counter(); }
+void handle_SC_Read()
+{
+  move_program_counter();
+  return;
+}
+void handle_SC_Write()
+{
+  move_program_counter();
+  return;
+}
+void handle_SC_Seek()
+{
+  move_program_counter();
+  return;
+}
+void handle_SC_Remove()
+{
+  move_program_counter();
+  return;
+}
 void handle_SC_SocketTCP()
 {
   kernel->machine->WriteRegister(2, SysSocketTCP());
-  return move_program_counter();
+  move_program_counter();
+  return;
 }
 void handle_SC_Connect()
 {
-  int virtAddr = kernel->machine->ReadRegister(4);
-  char *fileName = User2System(virtAddr, MaxFileLength + 1);
-  printf("virtAddr: %d\n", virtAddr);
-  int socketid = socket(AF_INET, SOCK_STREAM, 0);
-  char *ip = "127.0.0.1";
-  int port = 9001;
-  kernel->machine->WriteRegister(2, SysConnect(socketid, ip, port));
-  return move_program_counter();
+  int socketid = kernel->machine->ReadRegister(4);
+  // socketid = socket(AF_INET, SOCK_STREAM, 0);
+  int virtAddr = kernel->machine->ReadRegister(5);
+  char *ip = User2System(virtAddr, MaxFileLength + 1);
+  int port = kernel->machine->ReadRegister(6);
+  if (socketid == -1)
+    kernel->machine->WriteRegister(2, -1);
+  else
+    kernel->machine->WriteRegister(2, SysConnect(socketid, ip, port));
+  move_program_counter();
+  return;
+}
+void handle_SC_Send()
+{
+  int socketid = kernel->machine->ReadRegister(4);
+  // socketid = socket(AF_INET, SOCK_STREAM, 0);
+  int virtAddr = kernel->machine->ReadRegister(5);
+  char *buffer = User2System(virtAddr, MaxFileLength + 1);
+  int len = kernel->machine->ReadRegister(6);
+  if (socketid == -1)
+    kernel->machine->WriteRegister(2, -1);
+  else
+    kernel->machine->WriteRegister(2, SysSend(socketid, buffer, len));
+  move_program_counter();
+  return;
+}
+void handle_SC_Receive()
+{
+  int socketid = kernel->machine->ReadRegister(4);
+  // socketid = socket(AF_INET, SOCK_STREAM, 0);
+  int virtAddr = kernel->machine->ReadRegister(5);
+  char *buffer = User2System(virtAddr, MaxFileLength + 1);
+  int len = kernel->machine->ReadRegister(6);
+  if (socketid == -1)
+    kernel->machine->WriteRegister(2, -1);
+  else
+    kernel->machine->WriteRegister(2, SysReceive(socketid, buffer, len));
+  move_program_counter();
+  return;
 }
 void handle_SC_Add()
 {
@@ -175,19 +226,7 @@ void handle_SC_Add()
   DEBUG(dbgSys, "Add returning with " << result << "\n");
   /* Prepare Result */
   kernel->machine->WriteRegister(2, (int)result);
-  /* Modify return point */
-  {
-    /* set previous programm counter (debugging only)*/
-    kernel->machine->WriteRegister(PrevPCReg,
-                                   kernel->machine->ReadRegister(PCReg));
-    /* set programm counter to next instruction (all Instructions are 4 byte
-     * wide)*/
-    kernel->machine->WriteRegister(PCReg,
-                                   kernel->machine->ReadRegister(PCReg) + 4);
-    /* set next programm counter for brach execution */
-    kernel->machine->WriteRegister(NextPCReg,
-                                   kernel->machine->ReadRegister(PCReg) + 4);
-  }
+  move_program_counter();
   return;
   ASSERTNOTREACHED();
 }
@@ -261,13 +300,14 @@ void ExceptionHandler(ExceptionType which)
       return handle_SC_Seek();
     case SC_Remove:
       return handle_SC_Remove();
-    // for socket using network folder to implement
     case SC_SocketTCP:
       return handle_SC_SocketTCP();
     case SC_Connect:
       return handle_SC_Connect();
-    // case SC_Send:
-    // case SC_Receive:
+    case SC_Send:
+      return handle_SC_Send();
+    case SC_Receive:
+      return handle_SC_Receive();
     default:
       cerr << "Unexpected system call " << type << "\n";
       break;
