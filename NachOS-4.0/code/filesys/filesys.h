@@ -180,7 +180,6 @@ public:
   int Connect(int socketid, char *ip, int port);
   int Send(int socketid, char *buffer, int len);
   int Receive(int socketid, char *buffer, int len);
-  int Close(int socketid);
 
 private:
   OpenFile *freeMapFile;   // Bit map of free disk blocks,
