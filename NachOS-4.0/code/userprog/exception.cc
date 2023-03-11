@@ -25,6 +25,7 @@
 #include "ksyscall.h"
 #include "main.h"
 #include "syscall.h"
+
 //----------------------------------------------------------------------
 // ExceptionHandler
 // 	Entry point into the Nachos kernel.  Called when a user program
@@ -118,6 +119,8 @@ void handle_SC_Create()
 {
   int virtAddr = kernel->machine->ReadRegister(4);
   char *fileName = User2System(virtAddr, MaxFileLength + 1);
+  printf("🚀 virtAddr: %d\n", virtAddr);
+  printf("🚀 fileName: %s\n", fileName);
 
   if (SysCreate(fileName))
     kernel->machine->WriteRegister(2, 0);
@@ -176,7 +179,6 @@ void handle_SC_SocketTCP()
 void handle_SC_Connect()
 {
   int socketid = kernel->machine->ReadRegister(4);
-  // socketid = socket(AF_INET, SOCK_STREAM, 0);
   int virtAddr = kernel->machine->ReadRegister(5);
   char *ip = User2System(virtAddr, MaxFileLength + 1);
   int port = kernel->machine->ReadRegister(6);
@@ -190,7 +192,6 @@ void handle_SC_Connect()
 void handle_SC_Send()
 {
   int socketid = kernel->machine->ReadRegister(4);
-  // socketid = socket(AF_INET, SOCK_STREAM, 0);
   int virtAddr = kernel->machine->ReadRegister(5);
   char *buffer = User2System(virtAddr, MaxFileLength + 1);
   int len = kernel->machine->ReadRegister(6);
