@@ -39,13 +39,44 @@
 #include <sys/socket.h>
 #include <arpa/inet.h> //inet_addr
 
+#define MAX_PROCESS 20
+#define MODE_READ_AND_WRITE 0
+#define MODE_READ 1
+#define MODE_WRITE 2
+
 #ifdef FILESYS_STUB // Temporarily implement file system calls as
 // calls to UNIX, until the real file system
 // implementation is available
 class FileSystem
 {
 public:
-  FileSystem() {}
+  OpenFile **fileTable;
+  int *fileOpenType;
+  int index;
+
+  FileSystem()
+  {
+    fileTable = new OpenFile *[MAX_PROCESS];
+    fileOpenType = new int[MAX_PROCESS];
+    index = 0;
+    for (int i = 0; i < MAX_PROCESS; i++)
+    {
+      fileTable[i] = NULL;
+    }
+
+    fileOpenType[0] = MODE_READ;
+    fileOpenType[1] = MODE_WRITE;
+  }
+
+  ~FileSystem()
+  {
+    for (int i = 0; i < MAX_PROCESS; i++)
+    {
+      if (fileTable[i] != NULL)
+        delete fileTable[i];
+    }
+    delete[] fileTable;
+  }
 
   bool Create(char *name, int initialSize)
   {
@@ -64,6 +95,38 @@ public:
     if (fileDescriptor == -1)
       return NULL;
     return new OpenFile(fileDescriptor);
+  }
+
+  // Overload lai ham Open de mo file voi 2 type khac nhau
+  int Open(char *name, int type)
+  {
+    int freeIndex = -1, fileDescriptor = -1;
+    for (int i = 2; i < MAX_PROCESS; i++)
+    { // 0 and 1 is for stdin and stdout
+      if (fileTable[i] == NULL)
+      {
+        freeIndex = i;
+        break;
+      }
+    }
+
+    if (freeIndex == -1)
+      return -1;
+
+    if (type == MODE_READ_AND_WRITE)
+      fileDescriptor = OpenForReadWrite(name, FALSE);
+    if (type == MODE_READ)
+      fileDescriptor = OpenForRead(name, FALSE);
+
+    if (fileDescriptor == -1)
+      return -1;
+
+    fileTable[freeIndex] = new OpenFile(fileDescriptor);
+    fileOpenType[freeIndex] = type;
+    // printf("Position: %d\n", freeIndex);
+    // printf("Type: %d\n", type);
+
+    return freeIndex;
   }
 
   int SocketTCP()
@@ -122,6 +185,9 @@ public:
 class FileSystem
 {
 public:
+  OpenFile **fileTable;
+  int index;
+
   FileSystem(bool format); // Initialize the file system.
                            // Must be called *after* "synchDisk"
                            // has been initialized.
@@ -133,6 +199,7 @@ public:
   // Create a file (UNIX creat)
 
   OpenFile *Open(char *name); // Open a file (UNIX open)
+  OpenFile *Open(char *name, int type);
 
   bool Remove(char *name); // Delete a file (UNIX unlink)
 

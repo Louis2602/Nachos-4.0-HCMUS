@@ -30,10 +30,17 @@
 class OpenFile
 {
 public:
+	int type;
 	OpenFile(int f)
 	{
 		file = f;
 		currentOffset = 0;
+	}
+	OpenFile(int f, int t)
+	{
+		file = f;
+		currentOffset = 0;
+		type = t;
 	}							 // open the file
 	~OpenFile() { Close(file); } // close the file
 
@@ -78,9 +85,18 @@ class FileHeader;
 class OpenFile
 {
 public:
+	int type;
+	// type 0 : read and write
+	// type 1 : only read
+	// type 2 : stdin
+	// type 3 : stdout
+
 	OpenFile(int sector); // Open a file whose header is located
 						  // at "sector" on the disk
-	~OpenFile();		  // Close the file
+
+	OpenFile(int sector, int t);
+
+	~OpenFile(); // Close the file
 
 	void Seek(int position); // Set the position from which to
 							 // start reading/writing -- UNIX lseek
