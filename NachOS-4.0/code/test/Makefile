@@ -113,10 +113,14 @@ PROGRAMS = unknownhost
 else
 # change this if you create a new test program!
 <<<<<<< HEAD
+<<<<<<< HEAD
 PROGRAMS = add halt shell matmult sort segments create client
 =======
 PROGRAMS = add halt open shell matmult sort segments create socket_tcp connect
 >>>>>>> cdba92b (almost done open but not test)
+=======
+PROGRAMS = add halt open shell matmult sort segments create socket_tcp connect
+>>>>>>> cdba92bd0639d8286f2020b564c4b9b74447e9c8
 endif
 
 all: $(PROGRAMS)

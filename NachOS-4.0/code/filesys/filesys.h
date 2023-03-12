@@ -45,6 +45,11 @@
 #define MODE_READ 1
 #define MODE_WRITE 2
 
+#define MAX_PROCESS 20
+#define MODE_READ_AND_WRITE 0
+#define MODE_READ 1
+#define MODE_WRITE 2
+
 #ifdef FILESYS_STUB // Temporarily implement file system calls as
 // calls to UNIX, until the real file system
 // implementation is available
