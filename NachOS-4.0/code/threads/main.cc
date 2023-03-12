@@ -169,6 +169,10 @@ int main(int argc, char **argv)
     bool threadTestFlag = false;
     bool consoleTestFlag = false;
     bool networkTestFlag = false;
+
+    // Test program
+    char *userFileName = NULL;
+    bool createFlag = false;
 #ifndef FILESYS_STUB
     char *copyUnixFileName = NULL;   // UNIX file to be copied into Nachos
     char *copyNachosFileName = NULL; // name of copied file in Nachos
@@ -195,9 +199,15 @@ int main(int argc, char **argv)
         }
         else if (strcmp(argv[i], "-x") == 0)
         {
-            ASSERT(i + 1 < argc);
+            ASSERT(i + 2 < argc);
             userProgName = argv[i + 1];
-            i++;
+            userFileName = argv[i + 2];
+
+            if (strcmp(userProgName, "../test/create") == 0)
+            {
+                createFlag = TRUE;
+            }
+            i += 2;
         }
         else if (strcmp(argv[i], "-K") == 0)
         {
@@ -275,6 +285,10 @@ int main(int argc, char **argv)
     if (networkTestFlag)
     {
         kernel->NetworkTest(); // two-machine test of the network
+    }
+    if (createFlag)
+    {
+        printf("fileName: %s\n", userFileName);
     }
 
 #ifndef FILESYS_STUB

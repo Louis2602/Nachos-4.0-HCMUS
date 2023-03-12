@@ -2,6 +2,7 @@
 
 int main()
 {
-    Create("file.txt");
+    int status;
+    status = Create("newFile.txt");
     Halt();
 }
