@@ -1,9 +1,12 @@
 {
-    "files.associations": {
-        "*html": "html",
-        "new": "cpp",
-        "*.tcc": "c",
-        "functional": "c",
-        "fstream": "cpp"
-    }
+  "files.associations": {
+    "*html": "html",
+    "new": "cpp",
+    "*.tcc": "c",
+    "functional": "c",
+    "fstream": "cpp",
+    "bit": "c",
+    "array": "c",
+    "system_error": "c"
+  }
 }

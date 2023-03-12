@@ -17,19 +17,26 @@ void SysHalt() { kernel->interrupt->Halt(); }
 
 int SysAdd(int op1, int op2) { return op1 + op2; }
 
-bool SysCreate(char *fileName) {
+bool SysCreate(char *fileName)
+{
   bool success;
   int fileNameLength = strlen(fileName);
 
-  if (fileNameLength == 0) {
+  if (fileNameLength == 0)
+  {
     DEBUG(dbgSys, "\nFile name can't be empty");
     success = false;
-  } else if (fileName == NULL) {
+  }
+  else if (fileName == NULL)
+  {
     DEBUG(dbgSys, "\nNot enough memory in system");
     success = false;
-  } else {
+  }
+  else
+  {
     DEBUG(dbgSys, "\nFile's name read successfully");
-    if (!kernel->fileSystem->Create(fileName, 0)) {
+    if (!kernel->fileSystem->Create(fileName, 0))
+    {
       DEBUG(dbgSys, "\nError creating file");
       printf("Error: creating file `%s`.\n", fileName);
       success = false;
@@ -46,13 +53,19 @@ bool SysCreate(char *fileName) {
 }
 int SysOpen(char *fileName, int type)
 {
-  // if (type != 0 && type != 1)
-  //   return -1;
-  // // Open file successfully
-  // if (kernel->fileSystem->Open(fileName))
-  // {
-  //   DEBUG(dbgSys, "\nOpened file");
-  // }
+  if (type != 0 && type != 1)
+    return -1;
+  // Open file successfully
+  if (kernel->fileSystem->Open(fileName, type) != -1)
+  {
+    DEBUG(dbgSys, "\nOpened file");
+    printf("Success: Opening a file `%s` successfully.\n", fileName);
+  }
+  else
+  {
+    DEBUG(dbgSys, "\nOpened file");
+    printf("Failed: Opening a file `%s` failed.\n", fileName);
+  }
   return 1;
 }
 
