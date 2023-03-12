@@ -1,7 +1,8 @@
 #include "syscall.h"
 
-int main(int argc, char **argv)
+int main()
 {
-    Create("file.txt");
+    int status;
+    status = Create("newFile.txt");
     Halt();
 }
