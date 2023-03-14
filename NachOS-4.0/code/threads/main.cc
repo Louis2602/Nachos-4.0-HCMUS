@@ -289,6 +289,7 @@ int main(int argc, char **argv)
     if (createFlag)
     {
         printf("fileName: %s\n", userFileName);
+        kernel->fileSystem->Create(userFileName, 0);
     }
 
 #ifndef FILESYS_STUB
