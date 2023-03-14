@@ -9,6 +9,18 @@
 
 #define BUFFER_LENGTH 250
 
+void convertToUppercase(char *givenStr)
+{
+    int i;
+    for (i = 0; givenStr[i] != '\0'; i++)
+    {
+        if (givenStr[i] >= 'a' && givenStr[i] <= 'z')
+        {
+            givenStr[i] = givenStr[i] - 32;
+        }
+    }
+}
+
 int main(int argc, char const *argv[])
 {
     char *ip = "127.0.0.1";
@@ -78,9 +90,11 @@ int main(int argc, char const *argv[])
         printf("The client closed the connection before all of the\n");
         printf("data was sent\n");
     }
-    char *data = "Hello from server";
+    convertToUppercase(buffer);
+    printf("Data echoed back to client: %s\n", buffer);
+    printf("Size: %ld\n", strlen(buffer));
     // Echo data back to client
-    rc = send(clientSocket, data, sizeof(buffer), 0);
+    rc = send(clientSocket, buffer, sizeof(buffer), 0);
     if (rc < 0)
     {
         printf("Error: Send failed.\n");

@@ -9,7 +9,7 @@ int main()
 
     char buffer[250];
     int len = sizeof(buffer);
-    char *data = "Hello from client";
+    char *data = "Hello World";
 
     // Open a socket
     socketid = SocketTCP();
