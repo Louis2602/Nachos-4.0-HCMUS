@@ -1,9 +1,11 @@
 {
-    "files.associations": {
-        "*html": "html",
-        "new": "cpp",
-        "*.tcc": "c",
-        "functional": "c",
-        "fstream": "cpp"
-    }
+  "files.associations": {
+    "*html": "html",
+    "new": "cpp",
+    "*.tcc": "c",
+    "functional": "c",
+    "fstream": "cpp",
+    "optional": "cpp",
+    "type_traits": "cpp"
+  }
 }
