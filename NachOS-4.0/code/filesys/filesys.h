@@ -174,8 +174,7 @@ public:
     servAddr.sin_family = AF_INET;
     servAddr.sin_port = htons(port);
     inet_pton(AF_INET, ip, &servAddr.sin_addr); // Convert IP address to binary form
-    int rc = connect(socketid, (struct sockaddr *)&servAddr,
-                     sizeof(servAddr));
+    int rc = connect(socketid, (struct sockaddr *)&servAddr, sizeof(servAddr));
     if (rc < 0)
     {
       printf("Error: Fail to connect to a socket\n");

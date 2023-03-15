@@ -171,7 +171,7 @@ int main(int argc, char **argv)
     bool networkTestFlag = false;
 
     // Test program
-    char *userFileName = NULL;
+    char *userFileName = "test.txt";
     bool createFlag = false;
 #ifndef FILESYS_STUB
     char *copyUnixFileName = NULL;   // UNIX file to be copied into Nachos
@@ -199,15 +199,25 @@ int main(int argc, char **argv)
         }
         else if (strcmp(argv[i], "-x") == 0)
         {
-            ASSERT(i + 2 < argc);
-            userProgName = argv[i + 1];
-            userFileName = argv[i + 2];
+            if (i + 2 < argc)
+            {
+                ASSERT(i + 2 < argc);
+                userProgName = argv[i + 1];
+                userFileName = argv[i + 2];
+                i += 2;
+            }
+            else if (i + 1 < argc)
+            {
+                ASSERT(i + 1 < argc);
+                userProgName = argv[i + 1];
+                // userFileName = argv[i + 2];
+                i += 1;
+            }
 
             if (strcmp(userProgName, "../test/create") == 0)
             {
                 createFlag = TRUE;
             }
-            i += 2;
         }
         else if (strcmp(argv[i], "-K") == 0)
         {
@@ -289,6 +299,7 @@ int main(int argc, char **argv)
     if (createFlag)
     {
         printf("fileName: %s\n", userFileName);
+        kernel->fileSystem->Create(userFileName, 0);
     }
 
 #ifndef FILESYS_STUB
