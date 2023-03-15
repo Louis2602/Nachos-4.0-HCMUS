@@ -132,21 +132,28 @@ public:
   int Receive(int socketid, char *buffer, int len)
   {
     printf("======= Start receiving data from server =======\n");
-    int bytesReceived = 0;
-    while (bytesReceived < len)
+    // int bytesReceived = 0;
+    // while (bytesReceived < len)
+    // {
+    //   int rc = recv(socketid, &buffer[bytesReceived], len - bytesReceived, 0);
+    //   printf("Bytes receive: %d\n", rc);
+    //   if (rc < 0)
+    //   {
+    //     printf("Error: Receive data from server failed\n");
+    //     return -1;
+    //   }
+    //   else if (rc == 0)
+    //     printf("The server closed the connection\n");
+    //   bytesReceived += rc;
+    // }
+    int rc = recv(socketid, buffer, len, 0);
+    if (rc < 0)
     {
-      int rc = recv(socketid, &buffer[bytesReceived], len - bytesReceived, 0);
-      if (rc < 0)
-      {
-        printf("Error: Receive data from server failed\n");
-        return -1;
-      }
-      else if (rc == 0)
-        printf("The server closed the connection\n");
-      bytesReceived += rc;
+      printf("Error: Receive data from server failed\n");
+      return -1;
     }
     printf("Success: Data received successfully.\n");
-    return bytesReceived;
+    return rc;
   }
   bool Remove(char *name) { return Unlink(name) == 0; }
 };

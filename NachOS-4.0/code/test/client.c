@@ -2,8 +2,7 @@
 
 int main()
 {
-    int status;
-    int socketid = -1;
+    int status = -1, socketid = -1, noBytes = 0;
     char *ip = "127.0.0.1";
     int port = 9000;
 
@@ -11,14 +10,17 @@ int main()
     int len = sizeof(buffer);
     char *data = "Hello World";
 
+    int dataSize = 0;
+    while (data[dataSize] != '\0')
+        dataSize++;
+
     // Open a socket
     socketid = SocketTCP();
     // Connect to a server
     status = Connect(socketid, ip, port);
-    // Send 250 bytes of a's to the server
-    status = Send(socketid, data, len);
+    // Send data to the server
+    noBytes = Send(socketid, data, dataSize);
     // Receive buffer echoed back from server
-    status = Receive(socketid, buffer, len);
-
+    noBytes = Receive(socketid, data, len);
     Halt();
 }

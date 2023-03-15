@@ -62,16 +62,10 @@ int main(int argc, char const *argv[])
     printf("Ready for client connect.\n");
     // integer to hold client socket.
     clientSocket = accept(sockfd, NULL, NULL);
+    printf("Success: Client connect through socketid: %d.\n", clientSocket);
     if (clientSocket < 0)
     {
         printf("Error: Accept failed.\n");
-        return -1;
-    }
-    int len = BUFFER_LENGTH;
-    rc = setsockopt(clientSocket, SOL_SOCKET, SO_RCVLOWAT, (char *)&len, sizeof(len));
-    if (rc < 0)
-    {
-        printf("Error: SetSockOPT(SO_RCVLOWAT) failed.\n");
         return -1;
     }
     char buffer[BUFFER_LENGTH];
@@ -90,11 +84,12 @@ int main(int argc, char const *argv[])
         printf("The client closed the connection before all of the\n");
         printf("data was sent\n");
     }
+
     convertToUppercase(buffer);
     printf("Data echoed back to client: %s\n", buffer);
     printf("Size: %ld\n", strlen(buffer));
     // Echo data back to client
-    rc = send(clientSocket, buffer, sizeof(buffer), 0);
+    rc = send(clientSocket, buffer, strlen(buffer), 0);
     if (rc < 0)
     {
         printf("Error: Send failed.\n");

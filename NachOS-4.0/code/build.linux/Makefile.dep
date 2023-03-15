@@ -2601,7 +2601,8 @@ kernel.o: ../threads/kernel.cc /usr/include/stdc-predef.h \
  ../filesys/synchdisk.h ../machine/disk.h ../network/post.h \
  ../machine/network.h
 main.o: ../threads/main.cc /usr/include/stdc-predef.h ../lib/copyright.h \
- ../filesys/filesys.h ../lib/sysdep.h /usr/include/c++/11/iostream \
+ ../threads/main.h ../lib/debug.h ../lib/utility.h ../lib/sysdep.h \
+ /usr/include/c++/11/iostream \
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
  /usr/include/features.h /usr/include/features-time64.h \
@@ -2747,8 +2748,10 @@ main.o: ../threads/main.cc /usr/include/stdc-predef.h ../lib/copyright.h \
  /usr/include/c++/11/bits/basic_ios.tcc \
  /usr/include/c++/11/bits/ostream.tcc /usr/include/c++/11/istream \
  /usr/include/c++/11/bits/istream.tcc /usr/include/c++/11/stdlib.h \
- /usr/include/string.h /usr/include/strings.h ../filesys/openfile.h \
- ../lib/utility.h /usr/include/x86_64-linux-gnu/sys/socket.h \
+ /usr/include/string.h /usr/include/strings.h ../threads/kernel.h \
+ ../threads/thread.h ../machine/machine.h ../machine/translate.h \
+ ../userprog/addrspace.h ../filesys/filesys.h ../filesys/openfile.h \
+ /usr/include/x86_64-linux-gnu/sys/socket.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h \
  /usr/include/x86_64-linux-gnu/bits/socket.h \
  /usr/include/x86_64-linux-gnu/bits/socket_type.h \
@@ -2772,12 +2775,9 @@ main.o: ../threads/main.cc /usr/include/stdc-predef.h ../lib/copyright.h \
  /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
  /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
  /usr/include/x86_64-linux-gnu/bits/unistd_ext.h \
- /usr/include/linux/close_range.h ../threads/main.h ../lib/debug.h \
- ../threads/kernel.h ../threads/thread.h ../machine/machine.h \
- ../machine/translate.h ../userprog/addrspace.h ../threads/scheduler.h \
- ../lib/list.h ../lib/list.cc ../machine/interrupt.h \
- ../machine/callback.h ../machine/stats.h ../threads/alarm.h \
- ../machine/timer.h
+ /usr/include/linux/close_range.h ../threads/scheduler.h ../lib/list.h \
+ ../lib/list.cc ../machine/interrupt.h ../machine/callback.h \
+ ../machine/stats.h ../threads/alarm.h ../machine/timer.h
 scheduler.o: ../threads/scheduler.cc /usr/include/stdc-predef.h \
  ../lib/copyright.h ../lib/debug.h ../lib/utility.h ../lib/sysdep.h \
  /usr/include/c++/11/iostream \
