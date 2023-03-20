@@ -108,20 +108,15 @@ int SysWrite(char *buffer, int charCount, int fileId)
 
 int SysSocketTCP()
 {
-<<<<<<< HEAD
-	int sockID = kernel->fileSystem->SocketTCP();
-	return sockID;
-=======
   int sockID = kernel->fileSystem->SocketTCP();
   printf("Socket ID: `%d`.\n", sockID);
   return sockID;
->>>>>>> 84bc70cada241bb90829f19a39680f95fef10fd6
 }
 int SysCloseSocketTCP(int socketid)
 {
-	int success = kernel->fileSystem->CloseSocketTCP(socketid);
-	printf("Success: %d\n", success);
-	return success;
+  int success = kernel->fileSystem->CloseSocketTCP(socketid);
+  printf("Success: %d\n", success);
+  return success;
 }
 
 int SysConnect(int socketid, char *ip, int port)
@@ -156,18 +151,6 @@ void SysPrintString(char *buffer, int length)
 
 char *SysReadString(int length)
 {
-<<<<<<< HEAD
-	char *buffer = new char[length + 1];
-	for (int i = 0; i < length; i++)
-	{
-		char tmp = kernel->synchConsoleIn->GetChar();
-		if (tmp == '\n')
-			break;
-		buffer[i] = tmp;
-	}
-	buffer[length] = '\0';
-	return buffer;
-=======
   char *buffer = new char[length + 1];
   for (int i = 0; i < length; i++)
   {
@@ -178,6 +161,5 @@ char *SysReadString(int length)
   }
   buffer[length] = '\0';
   return buffer;
->>>>>>> 84bc70cada241bb90829f19a39680f95fef10fd6
 }
 #endif /* ! __USERPROG_KSYSCALL_H__ */

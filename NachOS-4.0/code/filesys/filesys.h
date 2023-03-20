@@ -106,8 +106,6 @@ public:
       return NULL;
     return new OpenFile(fileDescriptor);
   }
-<<<<<<< HEAD
-=======
 
   // Overload lai ham Open de mo file voi 2 type khac nhau
   int Open(char *name, int type)
@@ -180,7 +178,6 @@ public:
     return fileTable[id]->Write(buffer, charCount);
   }
 
->>>>>>> 84bc70cada241bb90829f19a39680f95fef10fd6
   int SocketTCP()
   {
     int MAX_FDS = 20;
