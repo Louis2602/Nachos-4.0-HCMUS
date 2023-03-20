@@ -72,8 +72,13 @@ int SysClose(int id)
 int SysSocketTCP()
 {
 	int sockID = kernel->fileSystem->SocketTCP();
-	printf("Socket ID: `%d`.\n", sockID);
 	return sockID;
+}
+int SysCloseSocketTCP(int socketid)
+{
+	int success = kernel->fileSystem->CloseSocketTCP(socketid);
+	printf("Success: %d\n", success);
+	return success;
 }
 
 int SysConnect(int socketid, char *ip, int port)
@@ -111,9 +116,10 @@ char *SysReadString(int length)
 	char *buffer = new char[length + 1];
 	for (int i = 0; i < length; i++)
 	{
-		buffer[i] = kernel->synchConsoleIn->GetChar();
-		if (buffer[i] == '\n')
+		char tmp = kernel->synchConsoleIn->GetChar();
+		if (tmp == '\n')
 			break;
+		buffer[i] = tmp;
 	}
 	buffer[length] = '\0';
 	return buffer;

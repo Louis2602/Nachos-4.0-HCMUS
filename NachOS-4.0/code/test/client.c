@@ -1,6 +1,6 @@
 #include "syscall.h"
 
-#define BUFFER_LENGTH 2000
+#define BUFFER_LENGTH 255
 
 int main()
 {
@@ -11,22 +11,28 @@ int main()
 
     // char *data = "Hello World";
     char *data;
-    char buffer[250];
+    char buffer[BUFFER_LENGTH];
     int len = sizeof(buffer);
-
-    PrintString("Input your data: ");
-    ReadString(data, BUFFER_LENGTH);
-
-    while (data[dataSize] != '\0')
-        dataSize++;
 
     // Open a socket
     socketid = SocketTCP();
     // Connect to a server
     status = Connect(socketid, ip, port);
-    // Send data to the server
-    noBytes = Send(socketid, data, dataSize);
-    // Receive buffer echoed back from server
-    noBytes = Receive(socketid, data, len);
+
+    while (1)
+    {
+        PrintString("Enter message: ");
+        ReadString(data, BUFFER_LENGTH);
+        while (data[dataSize] != '\0')
+            dataSize++;
+        // Send data to the server
+        noBytes = Send(socketid, data, dataSize);
+        // Receive buffer echoed back from server
+        noBytes = Receive(socketid, data, len);
+    }
+    // Close socket
+    if (socketid == -1)
+        status = CloseSocketTCP(socketid);
+
     Halt();
 }

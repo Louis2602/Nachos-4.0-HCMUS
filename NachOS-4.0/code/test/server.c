@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <pthread.h>
 
-#define BUFFER_LENGTH 2000
+#define BUFFER_LENGTH 255
 
 /*
  * Convert message recv from client to uppercase

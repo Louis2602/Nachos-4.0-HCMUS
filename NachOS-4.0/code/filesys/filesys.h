@@ -45,6 +45,7 @@
 // implementation is available
 class FileSystem
 {
+
 public:
   FileSystem() {}
 
@@ -69,29 +70,38 @@ public:
       return NULL;
     return new OpenFile(fileDescriptor);
   }
-
   int SocketTCP()
   {
-    // int MAX_FDS = 20;
-    // int fd_table[MAX_FDS];
+    int MAX_FDS = 20;
+    int fd_table[MAX_FDS];
+    int next_fd = 0;
     // Index of the next available file descriptor
-    int sockfd, next_fd = 0;
     // Check if we have reached the maximum number of file descriptors
     // while (next_fd < MAX_FDS)
     // {
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd == -1)
     {
       printf("Error: Socket failed.\n");
       return -1;
     }
-    //   fd_table[next_fd] = sockfd;
-    //   next_fd++;
+    // fd_table[next_fd] = sockfd;
+    // next_fd++;
     // }
     // for (int i = 0; i < MAX_FDS; ++i)
     //   printf("Socket number %d has ID: `%d`\n", i + 1, fd_table[i]);
 
     return sockfd;
+  }
+  int CloseSocketTCP(int socketid)
+  {
+    int rc = close(socketid);
+    if (rc < 0)
+    {
+      printf("Error: Fail to close a socket\n");
+      return -1;
+    }
+    return 0;
   }
   int Connect(int socketid, char *ip, int port)
   {
@@ -189,6 +199,7 @@ public:
   int Connect(int socketid, char *ip, int port);
   int Send(int socketid, char *buffer, int len);
   int Receive(int socketid, char *buffer, int len);
+  int CloseSocketTCP(int socketid);
 
 private:
   OpenFile *freeMapFile;   // Bit map of free disk blocks,

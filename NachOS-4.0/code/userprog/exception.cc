@@ -239,6 +239,13 @@ void handle_SC_Receive()
   move_program_counter();
   return;
 }
+void handle_SC_CloseSocketTCP()
+{
+  int socketid = kernel->machine->ReadRegister(4);
+  kernel->machine->WriteRegister(2, SysCloseSocketTCP(socketid));
+  move_program_counter();
+  return;
+}
 void handle_SC_Add()
 {
   DEBUG(dbgSys, "Add " << kernel->machine->ReadRegister(4) << " + "
@@ -360,6 +367,8 @@ void ExceptionHandler(ExceptionType which)
       return handle_SC_Send();
     case SC_Receive:
       return handle_SC_Receive();
+    case SC_CloseSocketTCP:
+      return handle_SC_CloseSocketTCP();
     case SC_PrintString:
       return handle_SC_PrintString();
     case SC_ReadString:
