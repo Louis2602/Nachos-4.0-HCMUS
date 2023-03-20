@@ -71,8 +71,19 @@ int SysOpen(char *fileName, int type)
 
 int SysClose(int id)
 {
-  // return kernel->fileSystem->Close(id);
-  return 1;
+  if (kernel->fileSystem->Close(id) != -1)
+  {
+
+    DEBUG(dbgSys, "\nClose file");
+    printf("Success: File no.`%d` has been closed successfully.\n", id);
+    return 1;
+  }
+  else
+  {
+    DEBUG(dbgSys, "\nClose file");
+    printf("Success: Closing the file no.`%d` failed.\n", id);
+  }
+  return -1;
 }
 int SysSocketTCP()
 {

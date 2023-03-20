@@ -132,10 +132,22 @@ public:
 
     fileTable[freeIndex] = new OpenFile(fileDescriptor);
     fileOpenType[freeIndex] = type;
-    // printf("Position: %d\n", freeIndex);
+    printf("Position: %d\n", freeIndex);
     // printf("Type: %d\n", type);
 
     return freeIndex;
+  }
+
+  bool Close(int id)
+  {
+    if (id >= 0 && id < MAX_PROCESS && fileTable[id] != NULL)
+    {
+      delete fileTable[id];
+      fileTable[id] = NULL;
+    }
+    else
+      return 0;
+    return 1;
   }
 
   int SocketTCP()
@@ -239,17 +251,14 @@ public:
   OpenFile *Open(char *name); // Open a file (UNIX open)
   OpenFile *Open(char *name, int type);
 
+  bool Close(OpenFileId id);
+
   bool Remove(char *name); // Delete a file (UNIX unlink)
 
   void List(); // List all the files in the file system
 
   void Print(); // List all the files and their contents
 
-  int Close(int id)
-  {
-    return 1;
-    // Implement in here
-  }
   int SocketTCP();
   int Connect(int socketid, char *ip, int port);
   int Send(int socketid, char *buffer, int len);

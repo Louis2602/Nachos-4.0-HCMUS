@@ -276,6 +276,18 @@ FileSystem::Open(char *name, int type)
     return fileTable[index - 1]; // return NULL if not found
 }
 
+bool FileSystem::Close(OpenFileId id)
+{
+    if (fileTable[id] != NULL)
+    {
+        delete fileTable[id];
+        fileTable = NULL;
+    }
+    else
+        return 0;
+    return 1;
+}
+
 //----------------------------------------------------------------------
 // FileSystem::Remove
 // 	Delete a file from the file system.  This requires:

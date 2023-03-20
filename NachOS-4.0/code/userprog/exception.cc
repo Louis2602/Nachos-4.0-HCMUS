@@ -287,7 +287,7 @@ void ExceptionHandler(ExceptionType which)
     case SC_Open:
       return handle_SC_Open();
     case SC_Close:
-      break;
+      return handle_SC_Close();
     case SC_Read:
       break;
     case SC_Write:
