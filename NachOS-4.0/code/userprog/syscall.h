@@ -39,6 +39,8 @@
 #define SC_Connect 17
 #define SC_Send 18
 #define SC_Receive 19
+#define SC_PrintString 20
+#define SC_ReadString 21
 
 #ifndef IN_ASM
 
@@ -179,7 +181,8 @@ int SocketTCP();
 int Connect(int socketid, char *ip, int port);
 int Send(int socketid, char *buffer, int len);
 int Receive(int socketid, char *buffer, int len);
-
+void PrintString(char *buffer);
+void ReadString(char *buffer, int length);
 #endif /* IN_ASM */
 
 #endif /* SYSCALL_H */

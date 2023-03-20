@@ -12,6 +12,7 @@
 #define __USERPROG_KSYSCALL_H__
 
 #include "main.h"
+#include "synchconsole.h"
 
 void SysHalt() { kernel->interrupt->Halt(); }
 
@@ -131,5 +132,26 @@ int SysReceive(int socketid, char *buffer, int len)
   printf("Number of bytes receive: %d\n", noBytes);
   printf("Data received from server: %s\n", buffer);
   return noBytes;
+}
+
+void SysPrintString(char *buffer, int length)
+{
+  for (int i = 0; i < length; i++)
+  {
+    kernel->synchConsoleOut->PutChar(buffer[i]);
+  }
+}
+
+char *SysReadString(int length)
+{
+  char *buffer = new char[length + 1];
+  for (int i = 0; i < length; i++)
+  {
+    buffer[i] = kernel->synchConsoleIn->GetChar();
+    if (buffer[i] == '\n')
+      break;
+  }
+  buffer[length] = '\0';
+  return buffer;
 }
 #endif /* ! __USERPROG_KSYSCALL_H__ */

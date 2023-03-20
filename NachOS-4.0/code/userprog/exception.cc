@@ -277,6 +277,34 @@ void handle_SC_Add()
   return;
   ASSERTNOTREACHED();
 }
+
+void handle_SC_PrintString()
+{
+  int memPtr = kernel->machine->ReadRegister(4); // read address of C-string
+  char *buffer = User2System(memPtr, MaxFileLength + 1);
+
+  SysPrintString(buffer, strlen(buffer));
+  delete[] buffer;
+  move_program_counter();
+  return;
+}
+
+void handle_SC_ReadString()
+{
+  int memPtr = kernel->machine->ReadRegister(4); // read address of C-string
+  int length = kernel->machine->ReadRegister(5); // read length of C-string
+  if (length > 255)
+  { // avoid allocating large memory
+    DEBUG(dbgSys, "String length exceeds " << 255);
+    SysHalt();
+  }
+  char *buffer = SysReadString(length);
+  System2User(memPtr, 255, buffer);
+  delete[] buffer;
+  move_program_counter();
+  return;
+}
+
 void ExceptionHandler(ExceptionType which)
 {
   int type = kernel->machine->ReadRegister(2);
@@ -355,6 +383,10 @@ void ExceptionHandler(ExceptionType which)
       return handle_SC_Send();
     case SC_Receive:
       return handle_SC_Receive();
+    case SC_PrintString:
+      return handle_SC_PrintString();
+    case SC_ReadString:
+      return handle_SC_ReadString();
     default:
       cerr << "Unexpected system call " << type << "\n";
       break;
