@@ -147,13 +147,36 @@ void handle_SC_Close()
 }
 void handle_SC_Read()
 {
+  int virtAddr = kernel->machine->ReadRegister(4);
+  int charCount = kernel->machine->ReadRegister(5);
+  char *buffer = stringUser2System(virtAddr, charCount);
+  int fileId = kernel->machine->ReadRegister(6);
+
+  DEBUG(dbgFile,
+        "Read " << charCount << " chars from file " << fileId << "\n");
+
+  kernel->machine->WriteRegister(2, SysRead(buffer, charCount, fileId));
+  StringSys2User(buffer, virtAddr, charCount);
+
+  delete[] buffer;
   move_program_counter();
   return;
 }
 void handle_SC_Write()
 {
-  move_program_counter();
-  return;
+  int virtAddr = kernel->machine->ReadRegister(4);
+  int charCount = kernel->machine->ReadRegister(5);
+  char *buffer = stringUser2System(virtAddr, charCount);
+  int fileId = kernel->machine->ReadRegister(6);
+
+  DEBUG(dbgFile,
+        "Write " << charCount << " chars to file " << fileId << "\n");
+
+  kernel->machine->WriteRegister(2, SysWrite(buffer, charCount, fileId));
+  StringSys2User(buffer, virtAddr, charCount);
+
+  delete[] buffer;
+  return move_program_counter();
 }
 void handle_SC_Seek()
 {

@@ -85,6 +85,25 @@ int SysClose(int id)
   }
   return -1;
 }
+
+int SysRead(char *buffer, int charCount, int fileId)
+{
+  if (fileId == 0)
+  {
+    return kernel->synchConsoleIn->GetString(buffer, charCount);
+  }
+  return kernel->fileSystem->Read(buffer, charCount, fileId);
+}
+
+int SysWrite(char *buffer, int charCount, int fileId)
+{
+  if (fileId == 1)
+  {
+    return kernel->synchConsoleOut->PutString(buffer, charCount);
+  }
+  return kernel->fileSystem->Write(buffer, charCount, fileId);
+}
+
 int SysSocketTCP()
 {
   int sockID = kernel->fileSystem->SocketTCP();

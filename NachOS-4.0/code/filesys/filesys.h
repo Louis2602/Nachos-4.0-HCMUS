@@ -50,6 +50,8 @@
 #define MODE_READ 1
 #define MODE_WRITE 2
 
+typedef int OpenFileId;
+
 #ifdef FILESYS_STUB // Temporarily implement file system calls as
 // calls to UNIX, until the real file system
 // implementation is available
@@ -148,6 +150,32 @@ public:
     else
       return 0;
     return 1;
+  }
+
+  int Read(char *buffer, int charCount, int id)
+  {
+    if (id >= MAX_PROCESS)
+      return -1;
+
+    if (fileTable[id] == NULL)
+      return -1;
+
+    int result = fileTable[id]->Read(buffer, charCount);
+
+    // if we cannot read enough bytes, we should return -2
+    if (result != charCount)
+      return -2;
+
+    return result;
+  }
+
+  int Write(char *buffer, int charCount, int id)
+  {
+    if (id >= MAX_PROCESS)
+      return -1;
+    if (openFile[id] == NULL || fileOpenType[id] == MODE_READ)
+      return -1;
+    return openFile[id]->Write(buffer, charCount);
   }
 
   int SocketTCP()
