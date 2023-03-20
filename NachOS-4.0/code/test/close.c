@@ -2,13 +2,15 @@
 
 int main()
 {
-    char fileName[] = "file.txt";
-    int length, id;
+    int id = 1;
     int i;
 
     for (i = 0; i < 5; i++)
     {
-        id = Open("hello.txt", 0);
+        id = Open("file.txt", 0);
     }
+    Close(id);
+    Open("file.txt", 0);
+
     Halt();
 }

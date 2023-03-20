@@ -40,6 +40,18 @@
 #include <arpa/inet.h> //inet_addr
 #include <unistd.h>
 
+#define MAX_PROCESS 20
+#define MODE_READ_AND_WRITE 0
+#define MODE_READ 1
+#define MODE_WRITE 2
+
+#define MAX_PROCESS 20
+#define MODE_READ_AND_WRITE 0
+#define MODE_READ 1
+#define MODE_WRITE 2
+
+typedef int OpenFileId;
+
 #ifdef FILESYS_STUB // Temporarily implement file system calls as
 // calls to UNIX, until the real file system
 // implementation is available
@@ -47,18 +59,42 @@ class FileSystem
 {
 
 public:
-  FileSystem() {}
+  OpenFile **fileTable;
+  int *fileOpenType;
+  int index;
+
+  FileSystem()
+  {
+    fileTable = new OpenFile *[MAX_PROCESS];
+    fileOpenType = new int[MAX_PROCESS];
+    index = 0;
+    for (int i = 0; i < MAX_PROCESS; i++)
+    {
+      fileTable[i] = NULL;
+    }
+
+    fileOpenType[0] = MODE_READ;
+    fileOpenType[1] = MODE_WRITE;
+  }
+
+  ~FileSystem()
+  {
+    for (int i = 0; i < MAX_PROCESS; i++)
+    {
+      if (fileTable[i] != NULL)
+        delete fileTable[i];
+    }
+    delete[] fileTable;
+  }
 
   bool Create(char *name, int initialSize)
   {
-    if (strcmp(name, "newFile.txt") != 0)
-    {
-      int fileDescriptor = OpenForWrite(name);
+    int fileDescriptor = OpenForWrite(name);
 
-      if (fileDescriptor == -1)
-        return FALSE;
-      Close(fileDescriptor);
-    }
+    if (fileDescriptor == -1)
+      return FALSE;
+    Close(fileDescriptor);
+
     return TRUE;
   }
 
@@ -70,6 +106,81 @@ public:
       return NULL;
     return new OpenFile(fileDescriptor);
   }
+<<<<<<< HEAD
+=======
+
+  // Overload lai ham Open de mo file voi 2 type khac nhau
+  int Open(char *name, int type)
+  {
+    int freeIndex = -1, fileDescriptor = -1;
+    for (int i = 2; i < MAX_PROCESS; i++)
+    { // 0 and 1 is for stdin and stdout
+      if (fileTable[i] == NULL)
+      {
+        freeIndex = i;
+        break;
+      }
+    }
+    // printf("\nfree index: %d", freeIndex);
+    // printf("\nopen mode: %d", type);
+    if (freeIndex == -1)
+      return -1;
+
+    if (type == MODE_READ_AND_WRITE)
+      fileDescriptor = OpenForReadWrite(name, FALSE);
+    if (type == MODE_READ)
+      fileDescriptor = OpenForRead(name, FALSE);
+
+    // printf("\nfile descriptor: %d", fileDescriptor);
+    if (fileDescriptor == -1)
+      return -1;
+
+    fileTable[freeIndex] = new OpenFile(fileDescriptor);
+    fileOpenType[freeIndex] = type;
+    // printf("Position: %d\n", freeIndex);
+    //  printf("Type: %d\n", type);
+
+    return freeIndex;
+  }
+
+  bool Close(int id)
+  {
+    if (id >= 0 && id < MAX_PROCESS && fileTable[id] != NULL)
+    {
+      delete fileTable[id];
+      fileTable[id] = NULL;
+    }
+    else
+      return 0;
+    return 1;
+  }
+
+  int Read(char *buffer, int charCount, int id)
+  {
+    if (id >= MAX_PROCESS)
+      return -1;
+
+    if (fileTable[id] == NULL)
+      return -1;
+
+    int result = fileTable[id]->Read(buffer, charCount);
+    // if we cannot read enough bytes, we should return -2
+    if (result != charCount)
+      return -2;
+
+    return result;
+  }
+
+  int Write(char *buffer, int charCount, int id)
+  {
+    if (id >= MAX_PROCESS)
+      return -1;
+    if (fileTable[id] == NULL || fileOpenType[id] == MODE_READ)
+      return -1;
+    return fileTable[id]->Write(buffer, charCount);
+  }
+
+>>>>>>> 84bc70cada241bb90829f19a39680f95fef10fd6
   int SocketTCP()
   {
     int MAX_FDS = 20;
@@ -172,6 +283,9 @@ public:
 class FileSystem
 {
 public:
+  OpenFile **fileTable;
+  int index;
+
   FileSystem(bool format); // Initialize the file system.
                            // Must be called *after* "synchDisk"
                            // has been initialized.
@@ -183,6 +297,9 @@ public:
   // Create a file (UNIX creat)
 
   OpenFile *Open(char *name); // Open a file (UNIX open)
+  OpenFile *Open(char *name, int type);
+
+  bool Close(OpenFileId id);
 
   bool Remove(char *name); // Delete a file (UNIX unlink)
 
@@ -190,11 +307,6 @@ public:
 
   void Print(); // List all the files and their contents
 
-  int Close(int id)
-  {
-    return 1;
-    // Implement in here
-  }
   int SocketTCP();
   int Connect(int socketid, char *ip, int port);
   int Send(int socketid, char *buffer, int len);
