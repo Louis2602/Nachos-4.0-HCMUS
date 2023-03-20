@@ -88,14 +88,12 @@ public:
 
   bool Create(char *name, int initialSize)
   {
-    if (strcmp(name, "newFile.txt") != 0)
-    {
-      int fileDescriptor = OpenForWrite(name);
+    int fileDescriptor = OpenForWrite(name);
 
-      if (fileDescriptor == -1)
-        return FALSE;
-      Close(fileDescriptor);
-    }
+    if (fileDescriptor == -1)
+      return FALSE;
+    Close(fileDescriptor);
+
     return TRUE;
   }
 
@@ -120,7 +118,8 @@ public:
         break;
       }
     }
-
+    // printf("\nfree index: %d", freeIndex);
+    // printf("\nopen mode: %d", type);
     if (freeIndex == -1)
       return -1;
 
@@ -129,13 +128,14 @@ public:
     if (type == MODE_READ)
       fileDescriptor = OpenForRead(name, FALSE);
 
+    // printf("\nfile descriptor: %d", fileDescriptor);
     if (fileDescriptor == -1)
       return -1;
 
     fileTable[freeIndex] = new OpenFile(fileDescriptor);
     fileOpenType[freeIndex] = type;
-    printf("Position: %d\n", freeIndex);
-    // printf("Type: %d\n", type);
+    // printf("Position: %d\n", freeIndex);
+    //  printf("Type: %d\n", type);
 
     return freeIndex;
   }
@@ -161,7 +161,6 @@ public:
       return -1;
 
     int result = fileTable[id]->Read(buffer, charCount);
-
     // if we cannot read enough bytes, we should return -2
     if (result != charCount)
       return -2;
@@ -173,9 +172,9 @@ public:
   {
     if (id >= MAX_PROCESS)
       return -1;
-    if (openFile[id] == NULL || fileOpenType[id] == MODE_READ)
+    if (fileTable[id] == NULL || fileOpenType[id] == MODE_READ)
       return -1;
-    return openFile[id]->Write(buffer, charCount);
+    return fileTable[id]->Write(buffer, charCount);
   }
 
   int SocketTCP()

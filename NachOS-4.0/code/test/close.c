@@ -7,9 +7,9 @@ int main()
 
     for (i = 0; i < 5; i++)
     {
-        Open("file.txt", 0);
+        id = Open("file.txt", 0);
     }
-    Close(4);
+    Close(id);
     Open("file.txt", 0);
 
     Halt();

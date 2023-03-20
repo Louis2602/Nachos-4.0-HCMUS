@@ -8,7 +8,7 @@ int main()
 
     for (i = 0; i < 5; i++)
     {
-        id = Open(fileName, 0);
+        id = Open("hello.txt", 0);
     }
     Halt();
 }

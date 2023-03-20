@@ -57,7 +57,8 @@ int SysOpen(char *fileName, int type)
   if (type != 0 && type != 1)
     return -1;
   // Open file successfully
-  if (kernel->fileSystem->Open(fileName, type) != -1)
+  int ans = kernel->fileSystem->Open(fileName, type);
+  if (ans != -1)
   {
     DEBUG(dbgSys, "\nOpened file");
     printf("Success: Opening a file `%s` successfully.\n", fileName);
@@ -67,7 +68,7 @@ int SysOpen(char *fileName, int type)
     DEBUG(dbgSys, "\nOpened file");
     printf("Failed: Opening a file `%s` failed.\n", fileName);
   }
-  return 1;
+  return ans;
 }
 
 int SysClose(int id)
@@ -89,19 +90,19 @@ int SysClose(int id)
 
 int SysRead(char *buffer, int charCount, int fileId)
 {
-  if (fileId == 0)
-  {
-    return kernel->synchConsoleIn->GetString(buffer, charCount);
-  }
+  // if (fileId == 0)
+  // {
+  //   return kernel->synchConsoleIn->GetString(buffer, charCount);
+  // }
   return kernel->fileSystem->Read(buffer, charCount, fileId);
 }
 
 int SysWrite(char *buffer, int charCount, int fileId)
 {
-  if (fileId == 1)
-  {
-    return kernel->synchConsoleOut->PutString(buffer, charCount);
-  }
+  // if (fileId == 1)
+  // {
+  //   return kernel->synchConsoleOut->PutString(buffer, charCount);
+  // }
   return kernel->fileSystem->Write(buffer, charCount, fileId);
 }
 
@@ -147,9 +148,10 @@ char *SysReadString(int length)
   char *buffer = new char[length + 1];
   for (int i = 0; i < length; i++)
   {
-    buffer[i] = kernel->synchConsoleIn->GetChar();
-    if (buffer[i] == '\n')
+    char tmp = kernel->synchConsoleIn->GetChar();
+    if (tmp == '\n')
       break;
+    buffer[i] = tmp;
   }
   buffer[length] = '\0';
   return buffer;

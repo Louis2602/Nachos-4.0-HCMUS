@@ -149,14 +149,14 @@ close: close.o start.o
 read.o: read.c
 	$(CC) $(CFLAGS) -c read.c
 
-read: read.o read.o
+read: read.o start.o
 	$(LD) $(LDFLAGS) start.o read.o -o read.coff
 	$(COFF2NOFF) read.coff read
 
 write.o: write.c
 	$(CC) $(CFLAGS) -c write.c
 
-write: write.o write.o
+write: write.o start.o
 	$(LD) $(LDFLAGS) start.o write.o -o write.coff
 	$(COFF2NOFF) write.coff write
 
