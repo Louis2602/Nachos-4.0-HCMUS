@@ -5,8 +5,7 @@
     "*.tcc": "c",
     "functional": "c",
     "fstream": "cpp",
-    "bit": "c",
-    "array": "c",
-    "system_error": "c"
+    "optional": "cpp",
+    "type_traits": "cpp"
   }
 }

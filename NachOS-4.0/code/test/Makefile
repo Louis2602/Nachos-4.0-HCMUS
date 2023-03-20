@@ -111,7 +111,7 @@ CFLAGS = -G 0 -c $(INCDIR) -B../../../usr/local/nachos/lib/gcc-lib/decstation-ul
 ifeq ($(hosttype),unknown)
 PROGRAMS = unknownhost
 else
-PROGRAMS = add halt open close shell matmult sort segments create socket_tcp connect
+PROGRAMS = add halt open close shell matmult sort segments create client remove
 endif
 
 all: $(PROGRAMS)
@@ -178,6 +178,12 @@ client.o: client.c
 client: client.o start.o
 	$(LD) $(LDFLAGS) start.o client.o -o client.coff
 	$(COFF2NOFF) client.coff client
+
+remove.o: remove.c
+	$(CC) $(CFLAGS) -c remove.c
+remove: remove.o start.o
+	$(LD) $(LDFLAGS) start.o remove.o -o remove.coff
+	$(COFF2NOFF) remove.coff remove
 
 clean:
 	$(RM) -f *.o *.ii

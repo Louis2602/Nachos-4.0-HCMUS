@@ -162,6 +162,34 @@ void handle_SC_Seek()
 }
 void handle_SC_Remove()
 {
+  DEBUG(dbgSys, "Remove system call.\n");
+  // SysRemove((char *)kernel->machine->ReadRegister(4));
+  int virArr = kernel->machine->ReadRegister(4);
+  char *filename = User2System(virArr, MaxFileLength + 1);
+  if (filename == NULL)
+  {
+    printf("\nNot enough memory in system\n");
+    DEBUG(dbgAddr, "Not enough memory in system\n");
+    kernel->machine->WriteRegister(2, -1); // return -1 to user program
+  }
+  bool success = kernel->fileSystem->Remove(filename);
+  if (!success)
+  {
+    // Fail to remove file
+    printf("\nCan't remove file '%s'\n", filename);
+    DEBUG(dbgAddr, "Can't remove file\n");
+    kernel->machine->WriteRegister(2, -1); // return -1 to user program
+
+    delete filename;
+  }
+  else
+  {
+    // Success to remove file
+    kernel->machine->WriteRegister(2, 0); // return 0 to user program
+    printf("\nSuccess to remove file '%s'\n", filename);
+
+    delete filename;
+  }
   move_program_counter();
   return;
 }
