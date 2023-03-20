@@ -3846,11 +3846,19 @@ exception.o: ../userprog/exception.cc /usr/include/stdc-predef.h \
  /usr/include/x86_64-linux-gnu/bits/confname.h \
  /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
  /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
+<<<<<<< HEAD
  /usr/include/x86_64-linux-gnu/bits/unistd_ext.h \
  /usr/include/linux/close_range.h ../threads/scheduler.h ../lib/list.h \
  ../lib/list.cc ../machine/interrupt.h ../machine/callback.h \
  ../machine/stats.h ../threads/alarm.h ../machine/timer.h \
  ../userprog/syscall.h ../userprog/errno.h
+=======
+ /usr/include/x86_64-linux-gnu/bits/unistd_ext.h ../threads/scheduler.h \
+ ../lib/list.h ../lib/list.cc ../machine/interrupt.h \
+ ../machine/callback.h ../machine/stats.h ../threads/alarm.h \
+ ../machine/timer.h ../userprog/synchconsole.h ../machine/console.h \
+ ../threads/synch.h ../userprog/syscall.h ../userprog/errno.h
+>>>>>>> 82dd6c7dcdd7889921a1fd796c40171d765a9fe4
 synchconsole.o: ../userprog/synchconsole.cc /usr/include/stdc-predef.h \
  ../lib/copyright.h ../userprog/synchconsole.h ../lib/utility.h \
  ../machine/callback.h ../machine/console.h ../threads/synch.h \

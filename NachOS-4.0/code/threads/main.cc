@@ -173,6 +173,7 @@ int main(int argc, char **argv)
     // Test program
     char *userFileName = "test.txt";
     bool createFlag = false;
+    bool removeFlag = false;
 #ifndef FILESYS_STUB
     char *copyUnixFileName = NULL;   // UNIX file to be copied into Nachos
     char *copyNachosFileName = NULL; // name of copied file in Nachos
@@ -210,13 +211,16 @@ int main(int argc, char **argv)
             {
                 ASSERT(i + 1 < argc);
                 userProgName = argv[i + 1];
-                // userFileName = argv[i + 2];
                 i += 1;
             }
 
             if (strcmp(userProgName, "../test/create") == 0)
             {
                 createFlag = TRUE;
+            }
+            else if (strcmp(userProgName, "../test/remove") == 0)
+            {
+                removeFlag = TRUE;
             }
         }
         else if (strcmp(argv[i], "-K") == 0)
@@ -300,6 +304,11 @@ int main(int argc, char **argv)
     {
         printf("fileName: %s\n", userFileName);
         kernel->fileSystem->Create(userFileName, 0);
+    }
+    if (removeFlag)
+    {
+        printf("fileName: %s\n", userFileName);
+        kernel->fileSystem->Remove(userFileName);
     }
 
 #ifndef FILESYS_STUB

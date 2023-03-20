@@ -54,7 +54,8 @@
  * Modify program counter
  * This code is adapted from `../machine/mipssim.cc`, line 667
  **/
-void move_program_counter() {
+void move_program_counter()
+{
   /* set previous programm counter (debugging only)
    * similar to: registers[PrevPCReg] = registers[PCReg];*/
   kernel->machine->WriteRegister(PrevPCReg, kernel->machine->ReadRegister(PCReg));
@@ -66,7 +67,8 @@ void move_program_counter() {
   kernel->machine->WriteRegister(NextPCReg, kernel->machine->ReadRegister(NextPCReg) + 4);
 }
 
-char *User2System(int virtAddr, int limit) {
+char *User2System(int virtAddr, int limit)
+{
   int i; // index
   int oneChar;
   char *kernelBuf = NULL;
@@ -77,7 +79,8 @@ char *User2System(int virtAddr, int limit) {
   memset(kernelBuf, 0, limit + 1);
 
   // printf("\n Filename u2s:");
-  for (i = 0; i < limit; i++) {
+  for (i = 0; i < limit; i++)
+  {
     kernel->machine->ReadMem(virtAddr + i, 1, &oneChar);
     kernelBuf[i] = (char)oneChar;
     // printf("%c",kernelBuf[i]);
@@ -86,14 +89,16 @@ char *User2System(int virtAddr, int limit) {
   }
   return kernelBuf;
 }
-int System2User(int virtAddr, int len, char *buffer) {
+int System2User(int virtAddr, int len, char *buffer)
+{
   if (len < 0)
     return -1;
   if (len == 0)
     return len;
   int i = 0;
   int oneChar = 0;
-  do {
+  do
+  {
     oneChar = (int)buffer[i];
     kernel->machine->WriteMem(virtAddr + i, 1, oneChar);
     i++;
@@ -101,12 +106,14 @@ int System2User(int virtAddr, int len, char *buffer) {
   return i;
 }
 
-void handle_SC_Halt() {
+void handle_SC_Halt()
+{
   DEBUG(dbgSys, "Shutdown, initiated by user program.\n");
   SysHalt();
   ASSERTNOTREACHED();
 }
-void handle_SC_Create() {
+void handle_SC_Create()
+{
   int virtAddr = kernel->machine->ReadRegister(4);
   char *fileName = User2System(virtAddr, MaxFileLength + 1);
 
@@ -155,6 +162,34 @@ void handle_SC_Seek()
 }
 void handle_SC_Remove()
 {
+  DEBUG(dbgSys, "Remove system call.\n");
+  // SysRemove((char *)kernel->machine->ReadRegister(4));
+  int virArr = kernel->machine->ReadRegister(4);
+  char *filename = User2System(virArr, MaxFileLength + 1);
+  if (filename == NULL)
+  {
+    printf("\nNot enough memory in system\n");
+    DEBUG(dbgAddr, "Not enough memory in system\n");
+    kernel->machine->WriteRegister(2, -1); // return -1 to user program
+  }
+  bool success = kernel->fileSystem->Remove(filename);
+  if (!success)
+  {
+    // Fail to remove file
+    printf("\nCan't remove file '%s'\n", filename);
+    DEBUG(dbgAddr, "Can't remove file\n");
+    kernel->machine->WriteRegister(2, -1); // return -1 to user program
+
+    delete filename;
+  }
+  else
+  {
+    // Success to remove file
+    kernel->machine->WriteRegister(2, 0); // return 0 to user program
+    printf("\nSuccess to remove file '%s'\n", filename);
+
+    delete filename;
+  }
   move_program_counter();
   return;
 }
@@ -219,12 +254,42 @@ void handle_SC_Add()
   return;
   ASSERTNOTREACHED();
 }
-void ExceptionHandler(ExceptionType which) {
+
+void handle_SC_PrintString()
+{
+  int memPtr = kernel->machine->ReadRegister(4); // read address of C-string
+  char *buffer = User2System(memPtr, MaxFileLength + 1);
+
+  SysPrintString(buffer, strlen(buffer));
+  delete[] buffer;
+  move_program_counter();
+  return;
+}
+
+void handle_SC_ReadString()
+{
+  int memPtr = kernel->machine->ReadRegister(4); // read address of C-string
+  int length = kernel->machine->ReadRegister(5); // read length of C-string
+  if (length > 255)
+  { // avoid allocating large memory
+    DEBUG(dbgSys, "String length exceeds " << 255);
+    SysHalt();
+  }
+  char *buffer = SysReadString(length);
+  System2User(memPtr, 255, buffer);
+  delete[] buffer;
+  move_program_counter();
+  return;
+}
+
+void ExceptionHandler(ExceptionType which)
+{
   int type = kernel->machine->ReadRegister(2);
 
   DEBUG(dbgSys, "Received Exception " << which << " type: " << type << "\n");
 
-  switch (which) {
+  switch (which)
+  {
   case NoException:
     kernel->interrupt->setStatus(SystemMode);
     DEBUG(dbgSys, "Switch to system mode\n");
@@ -267,7 +332,8 @@ void ExceptionHandler(ExceptionType which) {
     kernel->interrupt->Halt();
     break;
   case SyscallException:
-    switch (type) {
+    switch (type)
+    {
     case SC_Halt:
       return handle_SC_Halt();
     case SC_Add:
@@ -294,6 +360,10 @@ void ExceptionHandler(ExceptionType which) {
       return handle_SC_Send();
     case SC_Receive:
       return handle_SC_Receive();
+    case SC_PrintString:
+      return handle_SC_PrintString();
+    case SC_ReadString:
+      return handle_SC_ReadString();
     default:
       cerr << "Unexpected system call " << type << "\n";
       break;
