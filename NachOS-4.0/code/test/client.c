@@ -1,16 +1,22 @@
 #include "syscall.h"
 
+#define BUFFER_LENGTH 2000
+
 int main()
 {
     int status = -1, socketid = -1, noBytes = 0;
     char *ip = "127.0.0.1";
     int port = 9000;
+    int dataSize = 0;
 
+    // char *data = "Hello World";
+    char *data;
     char buffer[250];
     int len = sizeof(buffer);
-    char *data = "Hello World";
 
-    int dataSize = 0;
+    PrintString("Input your data: ");
+    ReadString(data, BUFFER_LENGTH);
+
     while (data[dataSize] != '\0')
         dataSize++;
 

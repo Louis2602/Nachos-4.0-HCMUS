@@ -72,24 +72,24 @@ public:
 
   int SocketTCP()
   {
-    int MAX_FDS = 20;
-    int fd_table[MAX_FDS];
+    // int MAX_FDS = 20;
+    // int fd_table[MAX_FDS];
     // Index of the next available file descriptor
     int sockfd, next_fd = 0;
     // Check if we have reached the maximum number of file descriptors
-    while (next_fd < MAX_FDS)
+    // while (next_fd < MAX_FDS)
+    // {
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd == -1)
     {
-      sockfd = socket(AF_INET, SOCK_STREAM, 0);
-      if (sockfd == -1)
-      {
-        printf("Error: Socket failed.\n");
-        return -1;
-      }
-      fd_table[next_fd] = sockfd;
-      next_fd++;
+      printf("Error: Socket failed.\n");
+      return -1;
     }
-    for (int i = 0; i < MAX_FDS; ++i)
-      printf("Socket number %d has ID: `%d`\n", i + 1, fd_table[i]);
+    //   fd_table[next_fd] = sockfd;
+    //   next_fd++;
+    // }
+    // for (int i = 0; i < MAX_FDS; ++i)
+    //   printf("Socket number %d has ID: `%d`\n", i + 1, fd_table[i]);
 
     return sockfd;
   }
