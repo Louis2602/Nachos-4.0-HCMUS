@@ -6,6 +6,7 @@
     "functional": "c",
     "fstream": "cpp",
     "optional": "cpp",
-    "type_traits": "cpp"
+    "type_traits": "cpp",
+    "memory_resource": "cpp"
   }
 }
