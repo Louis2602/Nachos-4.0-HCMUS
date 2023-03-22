@@ -1,24 +1,42 @@
 #include "syscall.h"
 
+#define BUFFER_LENGTH 255
+
 int main()
 {
-    int status;
-    int socketid = -1;
+    int status = -1, socketid = -1, noBytes = 0;
     char *ip = "127.0.0.1";
     int port = 9000;
+    int dataSize = 0;
 
-    char buffer[250];
+    char *data = "Hello World";
+    // char *data;
+    char buffer[BUFFER_LENGTH];
     int len = sizeof(buffer);
-    char *data = "Hello from client";
+    int i;
 
-    // Open a socket
-    socketid = SocketTCP();
-    // Connect to a server
-    status = Connect(socketid, ip, port);
-    // Send 250 bytes of a's to the server
-    status = Send(socketid, data, len);
-    // Receive buffer echoed back from server
-    status = Receive(socketid, buffer, len);
+    for (i = 0; i < 20; i++)
+    {
+        // Open a socket
+        socketid = SocketTCP();
+        // Connect to a server
+        status = Connect(socketid, ip, port);
+
+        // while (1)
+        // {
+        // PrintString("Enter message: ");
+        // ReadString(data, BUFFER_LENGTH);
+        while (data[dataSize] != '\0')
+            dataSize++;
+        // Send data to the server
+        noBytes = Send(socketid, data, dataSize);
+        // Receive buffer echoed back from server
+        noBytes = Receive(socketid, data, len);
+        // }
+        // Close socket
+        if (socketid == -1)
+            status = CloseSocketTCP(socketid);
+    }
 
     Halt();
 }

@@ -210,6 +210,14 @@ Receive:
 	j 	$31
 	.end Receive
 
+	.globl CloseSocketTCP
+	.ent    CloseSocketTCP
+CloseSocketTCP:
+	addiu $2, $0, SC_CloseSocketTCP
+	syscall
+	j 	$31
+	.end CloseSocketTCP
+
 	.globl PrintString
 	.ent    PrintString
 PrintString:

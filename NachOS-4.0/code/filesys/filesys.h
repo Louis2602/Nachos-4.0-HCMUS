@@ -57,6 +57,7 @@ typedef int OpenFileId;
 // implementation is available
 class FileSystem
 {
+
 public:
   OpenFile **fileTable;
   int *fileOpenType;
@@ -195,24 +196,34 @@ public:
   {
     int MAX_FDS = 20;
     int fd_table[MAX_FDS];
+    int next_fd = 0;
     // Index of the next available file descriptor
-    int sockfd, next_fd = 0;
     // Check if we have reached the maximum number of file descriptors
-    while (next_fd < MAX_FDS)
+    // while (next_fd < MAX_FDS)
+    // {
+    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd == -1)
     {
-      sockfd = socket(AF_INET, SOCK_STREAM, 0);
-      if (sockfd == -1)
-      {
-        printf("Error: Socket failed.\n");
-        return -1;
-      }
-      fd_table[next_fd] = sockfd;
-      next_fd++;
+      printf("Error: Socket failed.\n");
+      return -1;
     }
-    for (int i = 0; i < MAX_FDS; ++i)
-      printf("Socket number %d has ID: `%d`\n", i + 1, fd_table[i]);
+    // fd_table[next_fd] = sockfd;
+    // next_fd++;
+    // }
+    // for (int i = 0; i < MAX_FDS; ++i)
+    //   printf("Socket number %d has ID: `%d`\n", i + 1, fd_table[i]);
 
     return sockfd;
+  }
+  int CloseSocketTCP(int socketid)
+  {
+    int rc = close(socketid);
+    if (rc < 0)
+    {
+      printf("Error: Fail to close a socket\n");
+      return -1;
+    }
+    return 0;
   }
   int Connect(int socketid, char *ip, int port)
   {
@@ -253,21 +264,28 @@ public:
   int Receive(int socketid, char *buffer, int len)
   {
     printf("======= Start receiving data from server =======\n");
-    int bytesReceived = 0;
-    while (bytesReceived < len)
+    // int bytesReceived = 0;
+    // while (bytesReceived < len)
+    // {
+    //   int rc = recv(socketid, &buffer[bytesReceived], len - bytesReceived, 0);
+    //   printf("Bytes receive: %d\n", rc);
+    //   if (rc < 0)
+    //   {
+    //     printf("Error: Receive data from server failed\n");
+    //     return -1;
+    //   }
+    //   else if (rc == 0)
+    //     printf("The server closed the connection\n");
+    //   bytesReceived += rc;
+    // }
+    int rc = recv(socketid, buffer, len, 0);
+    if (rc < 0)
     {
-      int rc = recv(socketid, &buffer[bytesReceived], len - bytesReceived, 0);
-      if (rc < 0)
-      {
-        printf("Error: Receive data from server failed\n");
-        return -1;
-      }
-      else if (rc == 0)
-        printf("The server closed the connection\n");
-      bytesReceived += rc;
+      printf("Error: Receive data from server failed\n");
+      return -1;
     }
     printf("Success: Data received successfully.\n");
-    return bytesReceived;
+    return rc;
   }
   bool Remove(char *name) { return Unlink(name) == 0; }
 };
@@ -304,6 +322,7 @@ public:
   int Connect(int socketid, char *ip, int port);
   int Send(int socketid, char *buffer, int len);
   int Receive(int socketid, char *buffer, int len);
+  int CloseSocketTCP(int socketid);
 
 private:
   OpenFile *freeMapFile;   // Bit map of free disk blocks,

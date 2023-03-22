@@ -122,6 +122,12 @@ int SysSocketTCP()
   printf("Socket ID: `%d`.\n", sockID);
   return sockID;
 }
+int SysCloseSocketTCP(int socketid)
+{
+  int success = kernel->fileSystem->CloseSocketTCP(socketid);
+  printf("Success: %d\n", success);
+  return success;
+}
 
 int SysConnect(int socketid, char *ip, int port)
 {
