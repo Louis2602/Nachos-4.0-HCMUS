@@ -15,7 +15,7 @@ int main()
     int len = sizeof(buffer);
     int i;
 
-    for (i = 0; i < 20; i++)
+    for (i = 0; i < 4; i++)
     {
         // Open a socket
         socketid = SocketTCP();
