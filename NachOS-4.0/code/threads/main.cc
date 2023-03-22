@@ -213,15 +213,6 @@ int main(int argc, char **argv)
                 userProgName = argv[i + 1];
                 i += 1;
             }
-
-            if (strcmp(userProgName, "../test/create") == 0)
-            {
-                createFlag = TRUE;
-            }
-            else if (strcmp(userProgName, "../test/remove") == 0)
-            {
-                removeFlag = TRUE;
-            }
         }
         else if (strcmp(argv[i], "-K") == 0)
         {
@@ -299,16 +290,6 @@ int main(int argc, char **argv)
     if (networkTestFlag)
     {
         kernel->NetworkTest(); // two-machine test of the network
-    }
-    if (createFlag)
-    {
-        printf("fileName: %s\n", userFileName);
-        kernel->fileSystem->Create(userFileName, 0);
-    }
-    if (removeFlag)
-    {
-        printf("fileName: %s\n", userFileName);
-        kernel->fileSystem->Remove(userFileName);
     }
 
 #ifndef FILESYS_STUB
