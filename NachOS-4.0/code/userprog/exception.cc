@@ -180,6 +180,11 @@ void handle_SC_Write()
 }
 void handle_SC_Seek()
 {
+  int seekPos = kernel->machine->ReadRegister(4);
+  int fileId = kernel->machine->ReadRegister(5);
+
+  kernel->machine->WriteRegister(2, SysSeek(seekPos, fileId));
+
   move_program_counter();
   return;
 }
@@ -372,7 +377,7 @@ void ExceptionHandler(ExceptionType which)
     case SC_Write:
       return handle_SC_Write();
     case SC_Seek:
-      break;
+      return handle_SC_Seek();
     case SC_Remove:
       return handle_SC_Remove();
     case SC_SocketTCP:
