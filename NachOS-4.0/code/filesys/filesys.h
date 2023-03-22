@@ -182,7 +182,7 @@ public:
     int freeIndex = -1, sockfd = -1;
     for (int i = 0; i < MAX_PROCESS; i++)
     {
-      if (fileTable[i] == NULL)
+      if (fdTable[i] == NULL)
       {
         freeIndex = i;
         break;
@@ -196,12 +196,10 @@ public:
       printf("Error: Socket failed.\n");
       return -1;
     }
-
     fdTable[freeIndex] = sockfd;
+    printf("FREE INDEX: %d\n", freeIndex);
     for (int i = 0; i < 4; i++)
-    {
       printf("Available ID: %d\n", fdTable[i]);
-    }
 
     return sockfd;
   }
