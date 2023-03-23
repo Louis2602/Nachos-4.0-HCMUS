@@ -2,6 +2,10 @@
 
 int main()
 {
-    int status = Create("hello.txt");
+    int status;
+    char *buffer;
+    ReadString(buffer, 255);
+    PrintString(buffer);
+    status = Create(buffer);
     Halt();
 }
