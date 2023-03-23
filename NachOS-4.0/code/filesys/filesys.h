@@ -180,16 +180,16 @@ public:
 
   int Seek(int pos, int id)
   {
-    if (id <= 1 || id >= FILE_MAX)
+    if (id <= 1 || id >= MAX_PROCESS)
       return -1;
     if (fileTable[id] == NULL)
       return -1;
     // use seek(-1) to move to the end of file
     if (pos == -1)
       pos = fileTable[id]->Length();
-    if (pos < 0 || pos > fileTable[index]->Length())
+    if (pos < 0 || pos > fileTable[id]->Length())
       return -1;
-    return fileTable[index]->Seek(pos);
+    return fileTable[id]->Seek(pos);
   }
 
   int SocketTCP()

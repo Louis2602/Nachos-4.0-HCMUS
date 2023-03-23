@@ -5,7 +5,7 @@ int main()
     int status;
     char *buffer;
     ReadString(buffer, 255);
-    status = Create(buffer);
     PrintString(buffer);
+    status = Create(buffer);
     Halt();
 }

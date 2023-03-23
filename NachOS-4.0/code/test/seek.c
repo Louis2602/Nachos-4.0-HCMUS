@@ -16,6 +16,7 @@ int main()
         if (file_1 != -1)
         {
             fileSize_1 = Seek(-1, file_1);
+            PrintString("ok");
             Seek(0, file_1);
             Seek(0, file_3);
             i = 0;
