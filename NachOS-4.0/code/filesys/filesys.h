@@ -45,11 +45,6 @@
 #define MODE_READ 1
 #define MODE_WRITE 2
 
-#define MAX_PROCESS 20
-#define MODE_READ_AND_WRITE 0
-#define MODE_READ 1
-#define MODE_WRITE 2
-
 typedef int OpenFileId;
 
 #ifdef FILESYS_STUB // Temporarily implement file system calls as
@@ -61,16 +56,19 @@ class FileSystem
 public:
   OpenFile **fileTable;
   int *fileOpenType;
+  int *fdTable;
   int index;
 
   FileSystem()
   {
     fileTable = new OpenFile *[MAX_PROCESS];
+    fdTable = new int[MAX_PROCESS];
     fileOpenType = new int[MAX_PROCESS];
     index = 0;
     for (int i = 0; i < MAX_PROCESS; i++)
     {
       fileTable[i] = NULL;
+      fdTable[i] = NULL;
     }
 
     fileOpenType[0] = MODE_READ;
@@ -85,6 +83,7 @@ public:
         delete fileTable[i];
     }
     delete[] fileTable;
+    delete[] fdTable;
   }
 
   bool Create(char *name, int initialSize)
@@ -194,24 +193,27 @@ public:
 
   int SocketTCP()
   {
-    int MAX_FDS = 20;
-    int fd_table[MAX_FDS];
-    int next_fd = 0;
-    // Index of the next available file descriptor
-    // Check if we have reached the maximum number of file descriptors
-    // while (next_fd < MAX_FDS)
-    // {
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    int freeIndex = -1, sockfd = -1;
+    for (int i = 0; i < MAX_PROCESS; i++)
+    {
+      if (fdTable[i] == NULL)
+      {
+        freeIndex = i;
+        break;
+      }
+    }
+    if (freeIndex == -1)
+      return -1;
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd == -1)
     {
       printf("Error: Socket failed.\n");
       return -1;
     }
-    // fd_table[next_fd] = sockfd;
-    // next_fd++;
-    // }
-    // for (int i = 0; i < MAX_FDS; ++i)
-    //   printf("Socket number %d has ID: `%d`\n", i + 1, fd_table[i]);
+    fdTable[freeIndex] = sockfd;
+    printf("FREE INDEX: %d\n", freeIndex);
+    for (int i = 0; i < 4; i++)
+      printf("Available ID: %d\n", fdTable[i]);
 
     return sockfd;
   }
