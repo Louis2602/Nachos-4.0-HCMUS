@@ -122,37 +122,5 @@ int main(int argc, char const *argv[])
             return -1;
         }
     }
-    // char buffer[BUFFER_LENGTH];
-    // // Receive data sent from client
-    // rc = recv(clientSocket, buffer, sizeof(buffer), 0);
-    // if (rc < 0)
-    // {
-    //     printf("Error: Receive failed.\n");
-    //     return -1;
-    // }
-    // printf("%d bytes of data were received.\n", rc);
-    // printf("Data received from client: %s\n", buffer);
-
-    // if (rc == 0 || rc < sizeof(buffer))
-    // {
-    //     printf("The client closed the connection before all of the\n");
-    //     printf("data was sent\n");
-    // }
-
-    // convertToUppercase(buffer);
-    // printf("Data echoed back to client: %s\n", buffer);
-    // printf("Size: %ld\n", strlen(buffer));
-    // // Echo data back to client
-    // rc = send(clientSocket, buffer, strlen(buffer), 0);
-    // if (rc < 0)
-    // {
-    //     printf("Error: Send failed.\n");
-    //     return -1;
-    // }
-    // // Close down any open socket descriptors
-    // if (sockfd == -1)
-    //     close(sockfd);
-    // if (clientSocket == -1)
-    //     close(clientSocket);
     return 0;
 }

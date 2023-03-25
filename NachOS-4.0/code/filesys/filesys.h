@@ -70,6 +70,9 @@ public:
       fileTable[i] = NULL;
       fdTable[i] = NULL;
     }
+    printf("Initial FD Table for sockets\n");
+    for (int i = 0; i < 4; i++)
+      printf("Available ID: %d\n", fdTable[i]);
 
     fileOpenType[0] = MODE_READ;
     fileOpenType[1] = MODE_WRITE;
@@ -84,6 +87,11 @@ public:
     }
     delete[] fileTable;
     delete[] fdTable;
+    for (int i = 0; i < MAX_PROCESS; i++)
+      fdTable[i] = NULL;
+    printf("Clear FD Table for next sockets\n");
+    for (int i = 0; i < 4; i++)
+      printf("Available ID: %d\n", fdTable[i]);
   }
 
   bool Create(char *name, int initialSize)
