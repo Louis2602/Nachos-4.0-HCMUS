@@ -263,7 +263,10 @@ void handle_SC_Receive()
   if (socketid == -1)
     kernel->machine->WriteRegister(2, -1);
   else
+  {
     kernel->machine->WriteRegister(2, SysReceive(socketid, buffer, len));
+    System2User(virtAddr, 255, buffer);
+  }
   move_program_counter();
   return;
 }
