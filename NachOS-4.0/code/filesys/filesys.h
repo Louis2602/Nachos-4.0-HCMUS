@@ -53,7 +53,7 @@ struct FileSocket
   int id;
 };
 
-#define FILESYS_STUB
+// #define FILESYS_STUB
 #ifdef FILESYS_STUB // Temporarily implement file system calls as
 // calls to UNIX, until the real file system
 // implementation is available
