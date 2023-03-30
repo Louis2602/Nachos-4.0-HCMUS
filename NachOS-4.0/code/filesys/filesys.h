@@ -47,6 +47,13 @@
 
 typedef int OpenFileId;
 
+struct FileSocket
+{
+  int type;
+  int id;
+};
+
+#define FILESYS_STUB
 #ifdef FILESYS_STUB // Temporarily implement file system calls as
 // calls to UNIX, until the real file system
 // implementation is available
@@ -57,6 +64,7 @@ public:
   OpenFile **fileTable;
   int *fileOpenType;
   int *fdTable;
+  FileSocket fdFileSocket[MAX_PROCESS];
   int index;
 
   FileSystem()
@@ -125,6 +133,11 @@ public:
         freeIndex = i;
         break;
       }
+      if (fdFileSocket[i].id == NULL)
+      {
+        freeIndex = i;
+        break;
+      }
     }
     // printf("\nfree index: %d", freeIndex);
     // printf("\nopen mode: %d", type);
@@ -141,6 +154,9 @@ public:
       return -1;
 
     fileTable[freeIndex] = new OpenFile(fileDescriptor);
+    fdFileSocket[freeIndex].type = 0;
+    fdFileSocket[freeIndex].id = fileDescriptor;
+
     fileOpenType[freeIndex] = type;
     // printf("Position: %d\n", freeIndex);
     //  printf("Type: %d\n", type);
@@ -209,6 +225,11 @@ public:
         freeIndex = i;
         break;
       }
+      if (fdFileSocket[i].id == NULL)
+      {
+        freeIndex = i;
+        break;
+      }
     }
     if (freeIndex == -1)
       return -1;
@@ -219,9 +240,16 @@ public:
       return -1;
     }
     fdTable[freeIndex] = sockfd;
+    fdFileSocket[freeIndex].type = 1;
+    fdFileSocket[freeIndex].id = sockfd;
+
     printf("FREE INDEX: %d\n", freeIndex);
     for (int i = 0; i < 4; i++)
+    {
       printf("Available ID: %d\n", fdTable[i]);
+      printf("Type: %d\n", fdFileSocket[i]);
+      printf("ID: %d\n", fdFileSocket[i]);
+    }
 
     return sockfd;
   }
