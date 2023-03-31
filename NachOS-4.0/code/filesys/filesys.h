@@ -63,6 +63,7 @@ class FileSystem
 public:
   OpenFile **fileTable;
   int *fileOpenType;
+  char **fileName;
   int *fdTable;
   FileSocket fdFileSocket[MAX_PROCESS];
   int index;
@@ -70,12 +71,14 @@ public:
   FileSystem()
   {
     fileTable = new OpenFile *[MAX_PROCESS];
+    fileName = new char *[MAX_PROCESS];
     fdTable = new int[MAX_PROCESS];
     fileOpenType = new int[MAX_PROCESS];
     index = 0;
     for (int i = 0; i < MAX_PROCESS; i++)
     {
       fileTable[i] = NULL;
+      fileName[i] = NULL;
       fdTable[i] = NULL;
     }
     printf("Initial FD Table for sockets\n");
@@ -92,8 +95,11 @@ public:
     {
       if (fileTable[i] != NULL)
         delete fileTable[i];
+      if (fileName[i] != NULL)
+        delete fileName[i];
     }
     delete[] fileTable;
+    delete[] fileName;
     delete[] fdTable;
     for (int i = 0; i < MAX_PROCESS; i++)
       fdTable[i] = NULL;
@@ -154,6 +160,10 @@ public:
       return -1;
 
     fileTable[freeIndex] = new OpenFile(fileDescriptor);
+    fileName[freeIndex] = new char[strlen(name) + 1];
+    strcpy(fileName[freeIndex], name);
+    // printf("fileName[freeIndex]: %s\n", fileName[freeIndex]);
+
     fdFileSocket[freeIndex].type = 0;
     fdFileSocket[freeIndex].id = fileDescriptor;
 
@@ -325,7 +335,17 @@ public:
     printf("Success: Data received successfully.\n");
     return rc;
   }
-  bool Remove(char *name) { return Unlink(name) == 0; }
+  bool Remove(char *name)
+  {
+    for (int id = 2; id < MAX_PROCESS; id++)
+      if (fileTable[id] != NULL && strcmp(fileName[id], name) == 0)
+      {
+        printf("You must close `%s` before deleting. Please try again!\n", fileName[id]);
+        return 0;
+      }
+
+    return Unlink(name) == 0;
+  }
 };
 
 #else // FILESYS
