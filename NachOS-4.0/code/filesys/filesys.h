@@ -196,12 +196,11 @@ public:
     return 0;
   }
 
-  int Read(char *buffer, int charCount, int id)
+  int Read(int id, char *buffer, int charCount)
   {
     if (id >= MAX_PROCESS)
       return -1;
-
-    if (fdFileSocket[id].type == -1)
+    if (fdFileSocket[id].id == -1)
       return -1;
     int result;
     if (fdFileSocket[id].type == 0)
@@ -213,26 +212,22 @@ public:
     else
     {
       result = Receive(id, buffer, charCount);
-      if (result != charCount)
+      if (result > charCount)
         return -2;
     }
     // if we cannot read enough bytes, we should return -2
-
     return result;
   }
 
-  int Write(char *buffer, int charCount, int id)
+  int Write(int id, char *buffer, int charCount)
   {
     if (id >= MAX_PROCESS)
       return -1;
-    if (fdFileSocket[id].type == -1)
+    if (fdFileSocket[id].id == -1)
       return -1;
 
     if (fdFileSocket[id].type == 0 && fileOpenType[fdFileSocket[id].id] == MODE_READ)
-      return 1;
-    else
       return fileTable[fdFileSocket[id].id]->Write(buffer, charCount);
-
     return Send(id, buffer, charCount);
   }
 
@@ -391,7 +386,7 @@ public:
   // Create a file (UNIX creat)
 
   OpenFile *Open(char *name); // Open a file (UNIX open)
-  OpenFile *Open(char *name, int type);
+  // OpenFile *Open(char *name, int type);
 
   int Close(OpenFileId id);
 
@@ -400,6 +395,11 @@ public:
   void List(); // List all the files in the file system
 
   void Print(); // List all the files and their contents
+
+  int Read(int id, char *buffer, int charCount);
+  int Write(int id, char *buffer, int charCount);
+  int Seek(int pos, int id);
+  int Open(char *name, int type);
 
   int SocketTCP();
   int Connect(int socketid, char *ip, int port);

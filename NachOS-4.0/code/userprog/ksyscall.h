@@ -94,7 +94,11 @@ int SysRead(char *buffer, int charCount, int fileId)
   // {
   //   return kernel->synchConsoleIn->GetString(buffer, charCount);
   // }
-  return kernel->fileSystem->Read(buffer, charCount, fileId);
+
+  int noBytes = kernel->fileSystem->Read(fileId, buffer, charCount);
+  printf("Advance: Number of bytes receive: %d\n", charCount);
+  printf("Advance: Data received from server: %s\n", buffer);
+  return noBytes;
 }
 
 int SysWrite(char *buffer, int charCount, int fileId)
@@ -103,7 +107,8 @@ int SysWrite(char *buffer, int charCount, int fileId)
   // {
   //   return kernel->synchConsoleOut->PutString(buffer, charCount);
   // }
-  return kernel->fileSystem->Write(buffer, charCount, fileId);
+  printf("Advance: Number of bytes sent: %d\n", charCount);
+  return kernel->fileSystem->Write(fileId, buffer, charCount);
 }
 
 int SysSocketTCP()

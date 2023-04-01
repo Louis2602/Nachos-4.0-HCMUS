@@ -15,11 +15,11 @@ int main()
 
     if (destFileId != -1) // Kiem tra mo file thanh cong
     {
-      read = Read(buffer, 500, srcFileId);
+      read = Read(srcFileId, buffer, 500);
       while (buffer[len] != '\0')
         ++len;
 
-      Write(buffer, len, destFileId);
+      Write(destFileId, buffer, len);
       PrintString(" -> Copy thanh cong.\n\n");
       Close(destFileId); // Goi ham Close de dong file dich
     }
