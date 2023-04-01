@@ -203,13 +203,20 @@ public:
 
     if (fdFileSocket[id].type == -1)
       return -1;
-
-    int result = fileTable[fdFileSocket[id].id]->Read(buffer, charCount);
-    // fdFileSocket[id].type == 1
-    // int result = Receive(buffer, id, charCount);
+    int result;
+    if (fdFileSocket[id].type == 0)
+    {
+      result = fileTable[fdFileSocket[id].id]->Read(buffer, charCount);
+      if (result != charCount)
+        return -2;
+    }
+    else
+    {
+      result = Receive(id, buffer, charCount);
+      if (result != charCount)
+        return -2;
+    }
     // if we cannot read enough bytes, we should return -2
-    if (result != charCount)
-      return -2;
 
     return result;
   }
@@ -218,9 +225,15 @@ public:
   {
     if (id >= MAX_PROCESS)
       return -1;
-    if (fdFileSocket[id].type == -1 || fileOpenType[fdFileSocket[id].id] == MODE_READ)
+    if (fdFileSocket[id].type == -1)
       return -1;
-    return fileTable[fdFileSocket[id].id]->Write(buffer, charCount);
+
+    if (fdFileSocket[id].type == 0 && fileOpenType[fdFileSocket[id].id] == MODE_READ)
+      return 1;
+    else
+      return fileTable[fdFileSocket[id].id]->Write(buffer, charCount);
+
+    return Send(id, buffer, charCount);
   }
 
   int Seek(int pos, int id)
