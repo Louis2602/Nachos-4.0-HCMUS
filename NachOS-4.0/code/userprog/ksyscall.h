@@ -83,7 +83,7 @@ int SysClose(int id)
   else
   {
     DEBUG(dbgSys, "\nClose file");
-    printf("Success: Closing the file no.`%d` failed.\n", id);
+    printf("Failed: Closing the file no.`%d` failed.\n", id);
   }
   return -1;
 }

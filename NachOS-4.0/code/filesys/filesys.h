@@ -80,6 +80,7 @@ public:
       fileTable[i] = NULL;
       fileName[i] = NULL;
       fdTable[i] = NULL;
+      fdFileSocket[i].type = -1;
     }
     printf("Initial FD Table for sockets\n");
     for (int i = 0; i < 4; i++)
@@ -131,23 +132,25 @@ public:
   // Overload lai ham Open de mo file voi 2 type khac nhau
   int Open(char *name, int type)
   {
-    int freeIndex = -1, fileDescriptor = -1;
+    int freeIndex1 = -1, freeIndex2 = -1, fileDescriptor = -1;
     for (int i = 2; i < MAX_PROCESS; i++)
     { // 0 and 1 is for stdin and stdout
       if (fileTable[i] == NULL)
       {
-        freeIndex = i;
-        break;
-      }
-      if (fdFileSocket[i].id == NULL)
-      {
-        freeIndex = i;
+        freeIndex1 = i;
         break;
       }
     }
-    // printf("\nfree index: %d", freeIndex);
+    for (int i = 2; i < MAX_PROCESS; i++)
+      if (fdFileSocket[i].type == -1)
+      {
+        freeIndex2 = i;
+        break;
+      }
+    // printf("free index1: %d\n", freeIndex1);
+    // printf("free index2: %d\n", freeIndex2);
     // printf("\nopen mode: %d", type);
-    if (freeIndex == -1)
+    if (freeIndex2 == -1 || freeIndex1 == -1)
       return -1;
 
     if (type == MODE_READ_AND_WRITE)
@@ -159,31 +162,38 @@ public:
     if (fileDescriptor == -1)
       return -1;
 
-    fileTable[freeIndex] = new OpenFile(fileDescriptor);
-    fileName[freeIndex] = new char[strlen(name) + 1];
-    strcpy(fileName[freeIndex], name);
+    fileTable[freeIndex1] = new OpenFile(fileDescriptor);
+    fileName[freeIndex1] = new char[strlen(name) + 1];
+    strcpy(fileName[freeIndex1], name);
+    fileOpenType[freeIndex1] = type;
     // printf("fileName[freeIndex]: %s\n", fileName[freeIndex]);
 
-    fdFileSocket[freeIndex].type = 0;
-    fdFileSocket[freeIndex].id = fileDescriptor;
+    fdFileSocket[freeIndex2].type = 0;
+    fdFileSocket[freeIndex2].id = freeIndex1;
 
-    fileOpenType[freeIndex] = type;
     // printf("Position: %d\n", freeIndex);
-    //  printf("Type: %d\n", type);
+    // printf("Type: %d\n", type);
 
-    return freeIndex;
+    return freeIndex2;
   }
 
-  bool Close(int id)
+  int Close(int id)
   {
-    if (id >= 0 && id < MAX_PROCESS && fileTable[id] != NULL)
+    // for (int i = 0; i < MAX_PROCESS; i++)
+    //   printf("%d ", fdFileSocket[i].type);
+    // printf("\n");
+    // printf("id: %d\n", id);
+    if (id >= 0 && id < MAX_PROCESS && fdFileSocket[id].type != -1)
     {
-      delete fileTable[id];
-      fileTable[id] = NULL;
+      // printf("fdFileSocket[id].type: %d\n", fdFileSocket[id].type);
+      int id1 = fdFileSocket[id].id;
+      delete fileTable[id1];
+      fileTable[id1] = NULL;
+      fdFileSocket[id].type = -1;
     }
     else
-      return 0;
-    return 1;
+      return -1;
+    return 0;
   }
 
   int Read(char *buffer, int charCount, int id)
@@ -191,10 +201,12 @@ public:
     if (id >= MAX_PROCESS)
       return -1;
 
-    if (fileTable[id] == NULL)
+    if (fdFileSocket[id].type == -1)
       return -1;
 
-    int result = fileTable[id]->Read(buffer, charCount);
+    int result = fileTable[fdFileSocket[id].id]->Read(buffer, charCount);
+    // fdFileSocket[id].type == 1
+    // int result = Receive(buffer, id, charCount);
     // if we cannot read enough bytes, we should return -2
     if (result != charCount)
       return -2;
@@ -206,23 +218,23 @@ public:
   {
     if (id >= MAX_PROCESS)
       return -1;
-    if (fileTable[id] == NULL || fileOpenType[id] == MODE_READ)
+    if (fdFileSocket[id].type == -1 || fileOpenType[fdFileSocket[id].id] == MODE_READ)
       return -1;
-    return fileTable[id]->Write(buffer, charCount);
+    return fileTable[fdFileSocket[id].id]->Write(buffer, charCount);
   }
 
   int Seek(int pos, int id)
   {
     if (id <= 1 || id >= MAX_PROCESS)
       return -1;
-    if (fileTable[id] == NULL)
+    if (fdFileSocket[id].type == -1)
       return -1;
     // use seek(-1) to move to the end of file
     if (pos == -1)
-      pos = fileTable[id]->Length();
-    if (pos < 0 || pos > fileTable[id]->Length())
+      pos = fileTable[fdFileSocket[id].id]->Length();
+    if (pos < 0 || pos > fileTable[fdFileSocket[id].id]->Length())
       return -1;
-    return fileTable[id]->Seek(pos);
+    return fileTable[fdFileSocket[id].id]->Seek(pos);
   }
 
   int SocketTCP()
@@ -368,7 +380,7 @@ public:
   OpenFile *Open(char *name); // Open a file (UNIX open)
   OpenFile *Open(char *name, int type);
 
-  bool Close(OpenFileId id);
+  int Close(OpenFileId id);
 
   bool Remove(char *name); // Delete a file (UNIX unlink)
 
