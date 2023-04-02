@@ -34,10 +34,10 @@
 #define FS_H
 
 #include "copyright.h"
-#include "sysdep.h"
 #include "openfile.h"
-#include <sys/socket.h>
+#include "sysdep.h"
 #include <arpa/inet.h> //inet_addr
+#include <sys/socket.h>
 #include <unistd.h>
 
 #define MAX_PROCESS 20
@@ -47,8 +47,7 @@
 
 typedef int OpenFileId;
 
-struct FileSocket
-{
+struct FileSocket {
   int type;
   int id;
 };
@@ -57,8 +56,7 @@ struct FileSocket
 #ifdef FILESYS_STUB // Temporarily implement file system calls as
 // calls to UNIX, until the real file system
 // implementation is available
-class FileSystem
-{
+class FileSystem {
 
 public:
   OpenFile **fileTable;
@@ -68,15 +66,13 @@ public:
   FileSocket fdFileSocket[MAX_PROCESS];
   int index;
 
-  FileSystem()
-  {
+  FileSystem() {
     fileTable = new OpenFile *[MAX_PROCESS];
     fileName = new char *[MAX_PROCESS];
     fdTable = new int[MAX_PROCESS];
     fileOpenType = new int[MAX_PROCESS];
     index = 0;
-    for (int i = 0; i < MAX_PROCESS; i++)
-    {
+    for (int i = 0; i < MAX_PROCESS; i++) {
       fileTable[i] = NULL;
       fileName[i] = NULL;
       fdTable[i] = NULL;
@@ -90,10 +86,8 @@ public:
     fileOpenType[1] = MODE_WRITE;
   }
 
-  ~FileSystem()
-  {
-    for (int i = 0; i < MAX_PROCESS; i++)
-    {
+  ~FileSystem() {
+    for (int i = 0; i < MAX_PROCESS; i++) {
       if (fileTable[i] != NULL)
         delete fileTable[i];
       if (fileName[i] != NULL)
@@ -109,8 +103,7 @@ public:
       printf("Available ID: %d\n", fdTable[i]);
   }
 
-  bool Create(char *name, int initialSize)
-  {
+  bool Create(char *name, int initialSize) {
     int fileDescriptor = OpenForWrite(name);
 
     if (fileDescriptor == -1)
@@ -120,8 +113,7 @@ public:
     return TRUE;
   }
 
-  OpenFile *Open(char *name)
-  {
+  OpenFile *Open(char *name) {
     int fileDescriptor = OpenForReadWrite(name, FALSE);
 
     if (fileDescriptor == -1)
@@ -130,20 +122,16 @@ public:
   }
 
   // Overload lai ham Open de mo file voi 2 type khac nhau
-  int Open(char *name, int type)
-  {
+  int Open(char *name, int type) {
     int freeIndex1 = -1, freeIndex2 = -1, fileDescriptor = -1;
-    for (int i = 2; i < MAX_PROCESS; i++)
-    { // 0 and 1 is for stdin and stdout
-      if (fileTable[i] == NULL)
-      {
+    for (int i = 2; i < MAX_PROCESS; i++) { // 0 and 1 is for stdin and stdout
+      if (fileTable[i] == NULL) {
         freeIndex1 = i;
         break;
       }
     }
     for (int i = 2; i < MAX_PROCESS; i++)
-      if (fdFileSocket[i].type == -1)
-      {
+      if (fdFileSocket[i].type == -1) {
         freeIndex2 = i;
         break;
       }
@@ -177,40 +165,36 @@ public:
     return freeIndex2;
   }
 
-  int Close(int id)
-  {
+  int Close(int id) {
     // for (int i = 0; i < MAX_PROCESS; i++)
     //   printf("%d ", fdFileSocket[i].type);
     // printf("\n");
     // printf("id: %d\n", id);
-    if (id >= 0 && id < MAX_PROCESS && fdFileSocket[id].type != -1)
-    {
+    if (id >= 0 && id < MAX_PROCESS && fdFileSocket[id].type != -1) {
       // printf("fdFileSocket[id].type: %d\n", fdFileSocket[id].type);
       int id1 = fdFileSocket[id].id;
       delete fileTable[id1];
       fileTable[id1] = NULL;
       fdFileSocket[id].type = -1;
-    }
-    else
+    } else
       return -1;
     return 0;
   }
 
-  int Read(int id, char *buffer, int charCount)
-  {
+  int Read(int id, char *buffer, int charCount) {
     if (id >= MAX_PROCESS)
       return -1;
-    if (fdFileSocket[id].id == -1)
-      return -1;
+
+    if (id == -1) {
+      if (fdFileSocket[id].type == -1)
+        return -1;
+    }
     int result;
-    if (fdFileSocket[id].type == 0)
-    {
+    if (fdFileSocket[id].type == 0) {
       result = fileTable[fdFileSocket[id].id]->Read(buffer, charCount);
       if (result != charCount)
         return -2;
-    }
-    else
-    {
+    } else {
       result = Receive(id, buffer, charCount);
       if (result > charCount)
         return -2;
@@ -219,20 +203,21 @@ public:
     return result;
   }
 
-  int Write(int id, char *buffer, int charCount)
-  {
+  int Write(int id, char *buffer, int charCount) {
     if (id >= MAX_PROCESS)
       return -1;
-    if (fdFileSocket[id].id == -1)
-      return -1;
+    if (id == -1) {
+      if (fdFileSocket[id].type == -1)
+        return -1;
+    }
 
-    if (fdFileSocket[id].type == 0 && fileOpenType[fdFileSocket[id].id] == MODE_READ)
+    if (fdFileSocket[id].type == 0 &&
+        fileOpenType[fdFileSocket[id].id] != MODE_READ)
       return fileTable[fdFileSocket[id].id]->Write(buffer, charCount);
     return Send(id, buffer, charCount);
   }
 
-  int Seek(int pos, int id)
-  {
+  int Seek(int pos, int id) {
     if (id <= 1 || id >= MAX_PROCESS)
       return -1;
     if (fdFileSocket[id].type == -1)
@@ -245,18 +230,14 @@ public:
     return fileTable[fdFileSocket[id].id]->Seek(pos);
   }
 
-  int SocketTCP()
-  {
+  int SocketTCP() {
     int freeIndex = -1, sockfd = -1;
-    for (int i = 0; i < MAX_PROCESS; i++)
-    {
-      if (fdTable[i] == NULL)
-      {
+    for (int i = 0; i < MAX_PROCESS; i++) {
+      if (fdTable[i] == NULL) {
         freeIndex = i;
         break;
       }
-      if (fdFileSocket[i].id == NULL)
-      {
+      if (fdFileSocket[i].id == NULL) {
         freeIndex = i;
         break;
       }
@@ -264,8 +245,7 @@ public:
     if (freeIndex == -1)
       return -1;
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd == -1)
-    {
+    if (sockfd == -1) {
       printf("Error: Socket failed.\n");
       return -1;
     }
@@ -274,8 +254,7 @@ public:
     fdFileSocket[freeIndex].id = sockfd;
 
     printf("FREE INDEX: %d\n", freeIndex);
-    for (int i = 0; i < 4; i++)
-    {
+    for (int i = 0; i < 4; i++) {
       printf("Available ID: %d\n", fdTable[i]);
       printf("Type: %d\n", fdFileSocket[i]);
       printf("ID: %d\n", fdFileSocket[i]);
@@ -283,61 +262,55 @@ public:
 
     return sockfd;
   }
-  int CloseSocketTCP(int socketid)
-  {
+  int CloseSocketTCP(int socketid) {
     int rc = close(socketid);
-    if (rc < 0)
-    {
+    if (rc < 0) {
       printf("Error: Fail to close a socket\n");
       return -1;
     }
     return 0;
   }
-  int Connect(int socketid, char *ip, int port)
-  {
+  int Connect(int socketid, char *ip, int port) {
     printf("======= Start connecting to server =======\n");
     printf("SocketID: %d\n", socketid);
     printf("Ip: %s\n", ip);
     printf("Port: %d\n", port);
 
     struct sockaddr_in servAddr;
-    memset(&servAddr, 0, sizeof(servAddr)); // Clear the server address structure
+    memset(&servAddr, 0,
+           sizeof(servAddr)); // Clear the server address structure
 
     servAddr.sin_family = AF_INET;
     servAddr.sin_port = htons(port);
-    inet_pton(AF_INET, ip, &servAddr.sin_addr); // Convert IP address to binary form
+    inet_pton(AF_INET, ip,
+              &servAddr.sin_addr); // Convert IP address to binary form
     int rc = connect(socketid, (struct sockaddr *)&servAddr, sizeof(servAddr));
-    if (rc < 0)
-    {
+    if (rc < 0) {
       printf("Error: Fail to connect to a socket\n");
       return -1;
     }
     return 0;
   }
-  int Send(int socketid, char *buffer, int len)
-  {
+  int Send(int socketid, char *buffer, int len) {
     printf("======= Start sending data to server =======\n");
     printf("Data sent: %s\n", buffer);
     printf("Size: %d\n", len);
 
     int rc = send(socketid, buffer, len, 0);
-    if (rc < 0)
-    {
+    if (rc < 0) {
       printf("Error: Send data to server failed\n");
       return -1;
     }
     printf("Success: Data sent successfully.\n");
     return rc;
   }
-  int Receive(int socketid, char *buffer, int len)
-  {
+  int Receive(int socketid, char *buffer, int len) {
     printf("======= Start receiving data from server =======\n");
     // int bytesReceived = 0;
     // while (bytesReceived < len)
     // {
-    //   int rc = recv(socketid, &buffer[bytesReceived], len - bytesReceived, 0);
-    //   printf("Bytes receive: %d\n", rc);
-    //   if (rc < 0)
+    //   int rc = recv(socketid, &buffer[bytesReceived], len - bytesReceived,
+    //   0); printf("Bytes receive: %d\n", rc); if (rc < 0)
     //   {
     //     printf("Error: Receive data from server failed\n");
     //     return -1;
@@ -347,20 +320,18 @@ public:
     //   bytesReceived += rc;
     // }
     int rc = recv(socketid, buffer, len, 0);
-    if (rc < 0)
-    {
+    if (rc < 0) {
       printf("Error: Receive data from server failed\n");
       return -1;
     }
     printf("Success: Data received successfully.\n");
     return rc;
   }
-  bool Remove(char *name)
-  {
+  bool Remove(char *name) {
     for (int id = 2; id < MAX_PROCESS; id++)
-      if (fileTable[id] != NULL && strcmp(fileName[id], name) == 0)
-      {
-        printf("You must close `%s` before deleting. Please try again!\n", fileName[id]);
+      if (fileTable[id] != NULL && strcmp(fileName[id], name) == 0) {
+        printf("You must close `%s` before deleting. Please try again!\n",
+               fileName[id]);
         return 0;
       }
 
@@ -369,8 +340,7 @@ public:
 };
 
 #else // FILESYS
-class FileSystem
-{
+class FileSystem {
 public:
   OpenFile **fileTable;
   int index;
