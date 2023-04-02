@@ -4,8 +4,8 @@ int main()
 {
     int status;
     char *buffer;
+    PrintString("Input filename: ");
     ReadString(buffer, 255);
-    PrintString(buffer);
     status = Create(buffer);
     Halt();
 }
