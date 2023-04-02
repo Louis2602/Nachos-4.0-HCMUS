@@ -8,7 +8,7 @@ int main()
     int read;
 
     id = Open("hello.txt", 0);
-    read = Read(buffer, 500, id);
+    read = Read(id, buffer, 500);
     // int len = 0;
     // while (buffer[len] != '\0') ++len;
     PrintString("Read characters: ");

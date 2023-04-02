@@ -27,9 +27,9 @@ int main()
         while (data[dataSize] != '\0')
             dataSize++;
         // Send data to the server
-        noBytes = Send(socketid, data, dataSize);
+        noBytes = Write(socketid, data, dataSize);
         // Receive buffer echoed back from server
-        noBytes = Receive(socketid, data, len);
+        noBytes = Read(socketid, data, len);
         // Close socket
         if (socketid == -1)
             status = CloseSocketTCP(socketid);

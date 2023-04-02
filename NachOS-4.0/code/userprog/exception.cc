@@ -147,14 +147,13 @@ void handle_SC_Close()
 }
 void handle_SC_Read()
 {
-  int virtAddr = kernel->machine->ReadRegister(4);
-  int charCount = kernel->machine->ReadRegister(5);
+  int virtAddr = kernel->machine->ReadRegister(5);
+  int charCount = kernel->machine->ReadRegister(6);
   char *buffer = User2System(virtAddr, charCount);
-  int fileId = kernel->machine->ReadRegister(6);
+  int fileId = kernel->machine->ReadRegister(4);
 
   DEBUG(dbgFile,
         "Read " << charCount << " chars from file " << fileId << "\n");
-
   kernel->machine->WriteRegister(2, SysRead(buffer, charCount, fileId));
   System2User(virtAddr, charCount, buffer);
 
@@ -164,10 +163,10 @@ void handle_SC_Read()
 }
 void handle_SC_Write()
 {
-  int virtAddr = kernel->machine->ReadRegister(4);
-  int charCount = kernel->machine->ReadRegister(5);
+  int virtAddr = kernel->machine->ReadRegister(5);
+  int charCount = kernel->machine->ReadRegister(6);
   char *buffer = User2System(virtAddr, charCount);
-  int fileId = kernel->machine->ReadRegister(6);
+  int fileId = kernel->machine->ReadRegister(4);
 
   DEBUG(dbgFile,
         "Write " << charCount << " chars to file " << fileId << "\n");

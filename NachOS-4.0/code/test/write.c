@@ -10,7 +10,7 @@ int main()
     int read;
 
     id = Open("hello.txt", 0);
-    read = Read(buffer, 500, id);
+    read = Read(id, buffer, 500);
     // int len = 0;
     // while (buffer[len] != '\0') ++len;
     PrintString("Before: ");
@@ -20,14 +20,15 @@ int main()
     PrintString("Write something new: ");
     ReadString(buffer4Write, 255);
     len = 0;
-    while (buffer4Write[len] != '\0') ++len;
+    while (buffer4Write[len] != '\0')
+        ++len;
 
-    Write(buffer4Write, len, id);
-    
+    Write(id, buffer4Write, len);
+
     Close(id);
-    
+
     id = Open("hello.txt", 0);
-    read = Read(bufferAfter, 500, id);
+    read = Read(id, bufferAfter, 500);
     PrintString("After: ");
     PrintString(bufferAfter);
     PrintString("\n");

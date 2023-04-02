@@ -27,21 +27,21 @@ int main()
 
     if (destFileId != -1) // Kiem tra mo file thanh cong
     {
-      read = Read(buffer, 500, srcFileId);
+      read = Read(srcFileId, buffer, 500);
       while (buffer[len] != '\0')
         ++len;
-      
+
       // Send data to the server
       noBytes = Send(socketid, buffer, len);
-      
+
       // Receive buffer echoed back from server
       noBytes = Receive(socketid, buffer, len);
-      
+
       len = 0;
       while (buffer[len] != '\0')
         ++len;
 
-      Write(buffer, len, destFileId);
+      Write(destFileId, buffer, len);
       Close(destFileId); // Goi ham Close de dong file dich
     }
     else
