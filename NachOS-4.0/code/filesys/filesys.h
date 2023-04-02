@@ -217,7 +217,7 @@ public:
     {
       result = Receive(id, buffer, charCount);
       if (result > charCount)
-        return -2;
+        return -1;
     }
     // if we cannot read enough bytes, we should return -2
     return result;
