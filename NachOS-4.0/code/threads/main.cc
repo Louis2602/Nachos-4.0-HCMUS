@@ -49,6 +49,7 @@
 // global variables
 Kernel *kernel;
 Debug *debug;
+extern void ThreadTest(void);
 
 //----------------------------------------------------------------------
 // Cleanup
@@ -281,7 +282,8 @@ int main(int argc, char **argv)
     // run some tests, if requested
     if (threadTestFlag)
     {
-        kernel->ThreadSelfTest(); // test threads and synchronization
+        // kernel->ThreadSelfTest(); // test threads and synchronization
+        ThreadTest();
     }
     if (consoleTestFlag)
     {

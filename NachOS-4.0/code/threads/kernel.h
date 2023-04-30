@@ -18,6 +18,7 @@
 #include "alarm.h"
 #include "filesys.h"
 #include "machine.h"
+#include "process.h"
 
 class PostOfficeInput;
 class PostOfficeOutput;
@@ -45,6 +46,7 @@ public:
   // These are public for notational convenience; really,
   // they're global variables used everywhere.
 
+  Process *currentProcess;
   Thread *currentThread; // the thread holding the CPU
   Scheduler *scheduler;  // the ready list
   Interrupt *interrupt;  // interrupt status
@@ -59,6 +61,7 @@ public:
   PostOfficeOutput *postOfficeOut;
 
   int hostName; // machine identifier
+  int quantum = 10000;
 
 private:
   bool randomSlice;   // enable pseudo-random time slicing

@@ -28,6 +28,8 @@
 //	endian machine, and we're now running on a big endian machine.
 //----------------------------------------------------------------------
 
+bool AddrSpace::usedPhyPage[NumPhysPages];
+
 static void
 SwapHeader(NoffHeader *noffH)
 {
@@ -86,6 +88,9 @@ AddrSpace::AddrSpace()
 
 AddrSpace::~AddrSpace()
 {
+    for (int i = 0; i < numPages; i++)
+        AddrSpace::usedPhyPage[pageTable[i].physicalPage] = false;
+
     delete pageTable;
 }
 
@@ -129,6 +134,20 @@ bool AddrSpace::Load(char *fileName)
                                                                                           // to leave room for the stack
 #endif
     numPages = divRoundUp(size, PageSize);
+    pageTable = new TranslationEntry[numPages];
+    for (unsigned int i = 0, j = 8; i < numPages; i++)
+    {
+        pageTable[i].virtualPage = i;
+        while (j < NumPhysPages && AddrSpace::usedPhyPage[j] == true)
+            j++;
+        AddrSpace::usedPhyPage[j] = TRUE;
+        pageTable[i].physicalPage = j;
+        pageTable[i].valid = TRUE;
+        pageTable[i].use = FALSE;
+        pageTable[i].dirty = FALSE;
+        pageTable[i].readOnly = FALSE;
+    }
+
     size = numPages * PageSize;
 
     ASSERT(numPages <= NumPhysPages); // check we're not trying
@@ -145,7 +164,7 @@ bool AddrSpace::Load(char *fileName)
         DEBUG(dbgAddr, "Initializing code segment.");
         DEBUG(dbgAddr, noffH.code.virtualAddr << ", " << noffH.code.size);
         executable->ReadAt(
-            &(kernel->machine->mainMemory[noffH.code.virtualAddr]),
+            &(kernel->machine->mainMemory[pageTable[noffH.code.virtualAddr / PageSize].physicalPage * PageSize + (noffH.code.virtualAddr % PageSize)]),
             noffH.code.size, noffH.code.inFileAddr);
     }
     if (noffH.initData.size > 0)
@@ -153,7 +172,7 @@ bool AddrSpace::Load(char *fileName)
         DEBUG(dbgAddr, "Initializing data segment.");
         DEBUG(dbgAddr, noffH.initData.virtualAddr << ", " << noffH.initData.size);
         executable->ReadAt(
-            &(kernel->machine->mainMemory[noffH.initData.virtualAddr]),
+            &(kernel->machine->mainMemory[pageTable[noffH.initData.virtualAddr / PageSize].physicalPage * PageSize + (noffH.code.virtualAddr % PageSize)]),
             noffH.initData.size, noffH.initData.inFileAddr);
     }
 
