@@ -319,6 +319,48 @@ void handle_SC_ReadString()
   return;
 }
 
+void handle_SC_Exec()
+{
+  // Input: vi tri int
+  // Output: Fail return -1, Success: return id cua thread dang chay
+  // SpaceId Exec(char *name);
+  int virtAddr;
+  virtAddr = kernel->machine->ReadRegister(4); // doc dia chi ten chuong trinh tu thanh ghi r4
+  char *name;
+  name = User2System(virtAddr, MaxFileLength + 1); // Lay ten chuong trinh, nap vao kernel
+  if (name == NULL)
+  {
+    DEBUG(dbgSys, "\n Not enough memory in System");
+    ASSERT(false);
+    kernel->machine->WriteRegister(2, -1);
+    move_program_counter();
+    return;
+  }
+
+  kernel->machine->WriteRegister(2, SysExec(name));
+  // DO NOT DELETE NAME, THE THEARD WILL DELETE IT LATER
+  // delete[] name;
+
+  move_program_counter();
+  return;
+}
+
+void handle_SC_Join()
+{
+  int id = kernel->machine->ReadRegister(4);
+  kernel->machine->WriteRegister(2, SysJoin(id));
+  move_program_counter();
+  return;
+}
+
+void handle_SC_Exit()
+{
+  int id = kernel->machine->ReadRegister(4);
+  kernel->machine->WriteRegister(2, SysExit(id));
+  move_program_counter();
+  return;
+}
+
 void ExceptionHandler(ExceptionType which)
 {
   int type = kernel->machine->ReadRegister(2);
@@ -403,6 +445,12 @@ void ExceptionHandler(ExceptionType which)
       return handle_SC_PrintString();
     case SC_ReadString:
       return handle_SC_ReadString();
+    case SC_Exec:
+      return handle_SC_Exec();
+    case SC_Join:
+      return handle_SC_Join();
+    case SC_Exit:
+      return handle_SC_Exit();
     default:
       cerr << "Unexpected system call " << type << "\n";
       break;
