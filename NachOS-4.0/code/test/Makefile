@@ -111,7 +111,7 @@ CFLAGS = -G 0 -c $(INCDIR) -B../../../usr/local/nachos/lib/gcc-lib/decstation-ul
 ifeq ($(hosttype),unknown)
 PROGRAMS = unknownhost
 else
-PROGRAMS = add halt open close read write seek shell matmult sort segments create client remove cat copy concatenate fileclient ping pong scheduler
+PROGRAMS = add halt open close read write seek shell matmult sort segments create client remove cat copy concatenate fileclient ping pong scheduler test_sem
 endif
 
 all: $(PROGRAMS)
@@ -250,6 +250,12 @@ scheduler.o: scheduler.c
 scheduler: scheduler.o start.o
 	$(LD) $(LDFLAGS) start.o scheduler.o -o scheduler.coff
 	$(COFF2NOFF) scheduler.coff scheduler
+
+test_sem.o: test_sem.c
+	$(CC) $(CFLAGS) -c test_sem.c
+test_sem: test_sem.o start.o
+	$(LD) $(LDFLAGS) start.o test_sem.o -o test_sem.coff
+	$(COFF2NOFF) test_sem.coff test_sem
 
 clean:
 	$(RM) -f *.o *.ii

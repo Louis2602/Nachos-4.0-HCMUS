@@ -42,6 +42,9 @@
 #define SC_CloseSocketTCP 20
 #define SC_PrintString 21
 #define SC_ReadString 22
+#define SC_CreateSemaphore 51
+#define SC_Wait 52
+#define SC_Signal 53
 
 #ifndef IN_ASM
 
@@ -185,6 +188,16 @@ int Receive(int socketid, char *buffer, int len);
 int CloseSocketTCP(int socketid);
 void PrintString(char *buffer);
 void ReadString(char *buffer, int length);
+
+// Ham cho semaphore
+// Success: 0 - Failed: -1
+// Ham tao 1 semaphore voi ten semaphore
+int CreateSemaphore(char *name, int semval);
+
+int Wait(char *name);
+
+int Signal(char *name);
+
 #endif /* IN_ASM */
 
 #endif /* SYSCALL_H */
