@@ -111,7 +111,7 @@ CFLAGS = -G 0 -c $(INCDIR) -B../../../usr/local/nachos/lib/gcc-lib/decstation-ul
 ifeq ($(hosttype),unknown)
 PROGRAMS = unknownhost
 else
-PROGRAMS = add halt open close read write seek shell matmult sort segments create client remove cat copy concatenate fileclient ping pong scheduler test_sem
+PROGRAMS = add halt open close read write seek shell matmult sort segments create client remove cat copy concatenate fileclient ping pong scheduler test_sem threadSem
 endif
 
 all: $(PROGRAMS)
@@ -256,6 +256,12 @@ test_sem.o: test_sem.c
 test_sem: test_sem.o start.o
 	$(LD) $(LDFLAGS) start.o test_sem.o -o test_sem.coff
 	$(COFF2NOFF) test_sem.coff test_sem
+
+threadSem.o: threadSem.c
+	$(CC) $(CFLAGS) -c threadSem.c
+threadSem: threadSem.o start.o
+	$(LD) $(LDFLAGS) start.o threadSem.o -o threadSem.coff
+	$(COFF2NOFF) threadSem.coff threadSem
 
 clean:
 	$(RM) -f *.o *.ii
