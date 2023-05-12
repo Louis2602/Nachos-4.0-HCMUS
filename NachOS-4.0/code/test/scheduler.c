@@ -7,6 +7,4 @@ void main()
 	pongPID = Exec("../test/ping");
 	Join(pingPID);
 	Join(pongPID);
-	// pongPID = Exec("kha");
-  // PrintString("ABCS");
 }
